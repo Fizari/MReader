@@ -1,0 +1,61 @@
+﻿<Window x:Class="MReader.Core.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        xmlns:converters="clr-namespace:MReader.Core.Converters"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="{Binding Title}" Height="350" Width="525" >
+    <DockPanel>
+        <DockPanel.Background>
+            <RadialGradientBrush>
+                <GradientStop Color="White"/>
+                <GradientStop Color="#FF761DA2" Offset="1"/>
+            </RadialGradientBrush>
+        </DockPanel.Background>
+        <ToolBarPanel DockPanel.Dock="Top">
+            <Button HorizontalAlignment="Left" Command="{Binding PressMe}">PRESS ME</Button>
+        </ToolBarPanel>
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
+            <Grid.Resources>
+                <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="{Binding SplittersWidth}"/>
+                <ColumnDefinition MinWidth="{Binding ImagePanelMinWidth}" 
+                                  Width="auto">
+                    <ColumnDefinition.MaxWidth>
+                        <MultiBinding Converter="{StaticResource IPWidthConverter}">
+                            <Binding ElementName="mainGrid" Path="ActualWidth"/>
+                            <Binding ElementName="splitter1" Path="ActualWidth"/>
+                        </MultiBinding>
+                    </ColumnDefinition.MaxWidth>
+                </ColumnDefinition>
+                <ColumnDefinition Width="{Binding SplittersWidth}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White"/>
+            <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000"/>
+            <StackPanel Grid.Column="4" Margin="0">
+                <StackPanel.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFFFBE67"/>
+                        <GradientStop Color="#FFF2FFEB" Offset="1"/>
+                    </RadialGradientBrush>
+                </StackPanel.Background>
+            </StackPanel>
+            <StackPanel Grid.Column="0" Margin="0">
+                <StackPanel.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFFFBE67"/>
+                        <GradientStop Color="#FFF2FFEB" Offset="1"/>
+                    </RadialGradientBrush>
+                </StackPanel.Background>
+            </StackPanel>
+            <!-- Image Panel -->
+            <ScrollViewer  Grid.Column="2" Margin="0">
+                <Image Source="D:\Prog\CSharp-Projects\repos\MReader\MReader.Core\Chapter 1.jpg" Stretch="Uniform"></Image>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>
