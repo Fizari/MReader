@@ -12,9 +12,14 @@
                 <GradientStop Color="#FF761DA2" Offset="1"/>
             </RadialGradientBrush>
         </DockPanel.Background>
-        <ToolBarPanel DockPanel.Dock="Top">
-            <Button HorizontalAlignment="Left" Command="{Binding PressMe}">PRESS ME</Button>
-        </ToolBarPanel>
+        <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
+            <ToolBar>
+                <Button  Command="{Binding OpenFileDialog}">OPEN</Button>
+                <Button  Command="{Binding PressMe}">YOLO</Button>
+                <Button  Command="{Binding PressMe}">WOOOH</Button>
+            </ToolBar>
+        </ToolBarTray>
+
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
             <Grid.Resources>
                 <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
@@ -54,7 +59,7 @@
             </StackPanel>
             <!-- Image Panel -->
             <ScrollViewer  Grid.Column="2" Margin="0">
-                <Image Source="D:\Prog\CSharp-Projects\repos\MReader\MReader.Core\Chapter 1.jpg" Stretch="Uniform"></Image>
+                <Image Source="{Binding ImageSource}" Stretch="Uniform"></Image>
             </ScrollViewer>
         </Grid>
     </DockPanel>

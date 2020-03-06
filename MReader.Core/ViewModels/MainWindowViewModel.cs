@@ -1,35 +1,37 @@
-﻿using Prism.Commands;
+﻿using Microsoft.Win32;
+using MReader.Core.Extensions;
+using MReader.Core.Models;
+using MReader.Core.Services;
+using Prism.Commands;
 using Prism.Mvvm;
+using System;
+using System.Windows.Media.Imaging;
 
 namespace MReader.Core.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private string _title = "MReader - Dev";
+        private IFileService _fileService;
 
+        private string _title = "MReader - Dev";
+        private BitmapImage _imageSource;
         private int _splittersWidth = 10;
         private int _imagePanelMinWidth = 100;
 
-        private DelegateCommand _pressme;
-        public DelegateCommand PressMe =>
-            _pressme ?? (_pressme = new DelegateCommand(ExecuteCommandName));
+        private DelegateCommand _openFileDialog;
+        public DelegateCommand OpenFileDialog =>
+            _openFileDialog ?? (_openFileDialog = new DelegateCommand(ChooseFile));
 
-        void ExecuteCommandName()
-        {
-            //SplittersWidth == 10 ? SplittersWidth = 50 : SplittersWidth = 10;
-            if (SplittersWidth == 10)
-            {
-                SplittersWidth = 50;
-            }
-            else
-            {
-                SplittersWidth = 10;
-            }
-        }
         public string Title
         {
             get { return _title; }
             set { SetProperty(ref _title, value); }
+        }
+
+        public BitmapImage ImageSource
+        {
+            get { return _imageSource; }
+            set { SetProperty(ref _imageSource, value); }
         }
 
         public int SplittersWidth 
@@ -44,9 +46,28 @@ namespace MReader.Core.ViewModels
             set { SetProperty(ref _imagePanelMinWidth, value); }
         }
 
-        public MainWindowViewModel()
+        private void ChooseFile()
         {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string fileToLoad = openFileDialog.FileName;
+                _fileService.LoadFile(fileToLoad);
+            }
+        }
 
+        public MainWindowViewModel(IFileService fileService)
+        {
+            _fileService = fileService;
+            _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
+        }
+
+        // Display the Image in the panel when receiving the event 
+        private void OnCurrentImageJustLoaded(object sender, EventArgs e)
+        {
+            ImageData imageData = (ImageData)sender;
+            this.PrintDebug(imageData.File.FullName);
+            ImageSource = imageData.BitmapImg;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Prism.Ioc;
 using MReader.Core.Views;
 using System.Windows;
+using MReader.Core.Services;
 
 namespace MReader.Core
 {
@@ -16,7 +17,7 @@ namespace MReader.Core
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            containerRegistry.Register<IFileService, FileService>();
         }
     }
 }
