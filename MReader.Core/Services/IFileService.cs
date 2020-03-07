@@ -11,7 +11,7 @@ namespace MReader.Core.Services
         ImageData CurrentImage { get; }
         event EventHandler CurrentImageLoaded;
         bool LoadFile(string filePath);
-        ImageData GetNextImage();
-        ImageData GetPreviousFile();
+        ImageData LoadNextImage();
+        ImageData LoadPreviousImage();
     }
 }

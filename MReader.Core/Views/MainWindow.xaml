@@ -3,8 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:converters="clr-namespace:MReader.Core.Converters"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" >
+        Title="{Binding Title}" Height="350" Width="525">
+
+    <i:Interaction.Triggers >
+        <i:EventTrigger EventName="PreviewKeyDown">
+            <prism:InvokeCommandAction Command="{Binding WindowKeyDownCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <DockPanel>
         <DockPanel.Background>
             <RadialGradientBrush>
@@ -21,6 +29,13 @@
         </ToolBarTray>
 
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
+
+            <i:Interaction.Triggers >
+                <i:EventTrigger EventName="PreviewKeyDown">
+                    <prism:InvokeCommandAction Command="{Binding GridKeyDownCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
             <Grid.Resources>
                 <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
             </Grid.Resources>

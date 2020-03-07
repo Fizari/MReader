@@ -24,6 +24,7 @@ namespace MReader.Core.Services
 
         public event EventHandler CurrentImageLoaded;
 
+        #region properties
         public FolderData CurrentFolder
         {
             get { return _folderData; }
@@ -52,30 +53,31 @@ namespace MReader.Core.Services
                 _minListSizeForPreLoading = 1 + 2 * _preLoadingIndex;
             }
         }
+        #endregion
 
         public FileService ()
         {
             PreLoadingIndex = 1;
         }
 
-        public ImageData GetNextImage()
+        public ImageData LoadNextImage()
         {
-            _cpt = ConvertCPT(_cpt + 1);
-            if (_folderData.Files.Count > _minListSizeForPreLoading)//to prevent redundancy
-            {
-                LoadImageData(_cpt + PreLoadingIndex);
-                DisposeImageData(_cpt - (PreLoadingIndex + 1));
-            }
-            return _folderData.Files[_cpt];
+            return LoadPreviousOrNextImage(1);
         }
 
-        public ImageData GetPreviousFile()
+        public ImageData LoadPreviousImage()
         {
-            _cpt = ConvertCPT(_cpt - 1);
+            return LoadPreviousOrNextImage(-1);
+        }
+
+        //directionInt : int to specify wether next or previous image should be loaded
+        public ImageData LoadPreviousOrNextImage(int directionInt)
+        {
+            _cpt = ConvertCPT(_cpt + directionInt);
             if (_folderData.Files.Count > _minListSizeForPreLoading)//to prevent redundancy
             {
-                LoadImageData(_cpt - PreLoadingIndex);
-                DisposeImageData(_cpt + (PreLoadingIndex + 1));
+                LoadImageData(_cpt + (PreLoadingIndex * directionInt));
+                DisposeImageData(_cpt - ((PreLoadingIndex + 1) * directionInt));
             }
             return _folderData.Files[_cpt];
         }
@@ -91,7 +93,7 @@ namespace MReader.Core.Services
             // new folder to be loaded
             if (_folderData == null || _folderData.Folder == null || _folderData.Folder.FullName != file.Directory.FullName) 
             {
-                if (_folderData.Files != null)
+                if (_folderData != null && _folderData.Files != null)
                     DisposeCurrentlyLoadedFiles();
 
                 _folderData = new FolderData(file.Directory);
@@ -232,6 +234,7 @@ namespace MReader.Core.Services
         private void DisposeImageData(int index)
         {
             //Logic to dispose Image, MAY BE USELESS
+            //TODO optimize
             ImageData imgToDispose = _folderData.Files[ConvertCPT(index)];
             this.PrintDebug("sender : " + imgToDispose.File.Name);
             if (imgToDispose.BitmapImg != null)
@@ -240,6 +243,7 @@ namespace MReader.Core.Services
             }
         }
 
+        //Fire CurrentImageLoaded event when the current image that is displayed finished loading
         public void Imageloaded(ImageData sender)
         {
             this.PrintDebug("sender : " + sender.File.Name);

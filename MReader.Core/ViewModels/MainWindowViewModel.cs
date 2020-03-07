@@ -5,6 +5,7 @@ using MReader.Core.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace MReader.Core.ViewModels
@@ -12,15 +13,16 @@ namespace MReader.Core.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         private IFileService _fileService;
-
-        private string _title = "MReader - Dev";
         private BitmapImage _imageSource;
+        private string _title = "MReader - Dev";
         private int _splittersWidth = 10;
         private int _imagePanelMinWidth = 100;
 
+        #region properties
+
         private DelegateCommand _openFileDialog;
-        public DelegateCommand OpenFileDialog =>
-            _openFileDialog ?? (_openFileDialog = new DelegateCommand(ChooseFile));
+        public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
+        public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
 
         public string Title
         {
@@ -46,6 +48,16 @@ namespace MReader.Core.ViewModels
             set { SetProperty(ref _imagePanelMinWidth, value); }
         }
 
+        #endregion
+
+        public MainWindowViewModel(IFileService fileService)
+        {
+            _fileService = fileService;
+            _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
+            WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
+            GridKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnGridInputKeyDown);
+        }
+
         private void ChooseFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -56,18 +68,66 @@ namespace MReader.Core.ViewModels
             }
         }
 
-        public MainWindowViewModel(IFileService fileService)
-        {
-            _fileService = fileService;
-            _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
-        }
-
         // Display the Image in the panel when receiving the event 
         private void OnCurrentImageJustLoaded(object sender, EventArgs e)
         {
-            ImageData imageData = (ImageData)sender;
+            DisplayImage((ImageData)sender);
+        }
+
+        private void DisplayImage(ImageData imageToDisplay)
+        {
+            ImageData imageData = imageToDisplay;
             this.PrintDebug(imageData.File.FullName);
             ImageSource = imageData.BitmapImg;
         }
+
+        #region key bindings
+        private void OnWindowInputKeyDown(KeyEventArgs e)
+        {
+            //CTRL + O
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O)
+            {
+                ChooseFile();
+                e.Handled = true;
+            }
+            //CTRL + ENTER
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
+            {
+                //LOGIC
+                e.Handled = true;
+            }
+        }
+
+        private void OnGridInputKeyDown(KeyEventArgs e)
+        {
+            //LEFT
+            if (e.Key == Key.Left)
+            {
+                ImageData newImageToDisplay = _fileService.LoadPreviousImage();
+                DisplayImage(newImageToDisplay);
+                e.Handled = true;
+            }
+            //RIGHT
+            if (e.Key == Key.Right)
+            {
+                ImageData newImageToDisplay = _fileService.LoadNextImage();
+                DisplayImage(newImageToDisplay);
+                e.Handled = true;
+            }
+            //UP
+            if (e.Key == Key.Up)
+            {
+                //LOGIC
+                e.Handled = true;
+            }
+            //DOWN
+            if (e.Key == Key.Down)
+            {
+                //LOGIC
+                e.Handled = true;
+            }
+        }
+
+        #endregion
     }
 }
