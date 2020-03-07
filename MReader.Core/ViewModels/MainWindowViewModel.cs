@@ -17,10 +17,12 @@ namespace MReader.Core.ViewModels
         private string _title = "MReader - Dev";
         private int _splittersWidth = 10;
         private int _imagePanelMinWidth = 100;
+        private DelegateCommand _openFileDialog;
 
         #region properties
 
-        private DelegateCommand _openFileDialog;
+        public DelegateCommand OpenFileDialog =>
+            _openFileDialog ?? (_openFileDialog = new DelegateCommand(ChooseFile));
         public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
         public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
 

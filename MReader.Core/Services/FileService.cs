@@ -209,8 +209,10 @@ namespace MReader.Core.Services
                 Task.Run(() =>
                 {
                     BitmapImage newBitmapImage = new BitmapImage();
+                    FileStream stream = File.OpenRead(imgToLoad.File.FullName);
                     newBitmapImage.BeginInit();
-                    newBitmapImage.UriSource = new Uri(imgToLoad.File.FullName);
+                    newBitmapImage.CacheOption = BitmapCacheOption.None;
+                    newBitmapImage.StreamSource = stream;
 
                     // To save significant application memory, set the DecodePixelWidth or  
                     // DecodePixelHeight of the BitmapImage value of the image source to the desired 
@@ -224,6 +226,7 @@ namespace MReader.Core.Services
                     newBitmapImage.EndInit();
                     newBitmapImage.Freeze(); //necessary
 
+                    imgToLoad.ImageStream = stream;
                     imgToLoad.BitmapImg = newBitmapImage;
 
                     Imageloaded(imgToLoad);
@@ -233,13 +236,18 @@ namespace MReader.Core.Services
 
         private void DisposeImageData(int index)
         {
-            //Logic to dispose Image, MAY BE USELESS
-            //TODO optimize
             ImageData imgToDispose = _folderData.Files[ConvertCPT(index)];
             this.PrintDebug("sender : " + imgToDispose.File.Name);
             if (imgToDispose.BitmapImg != null)
             {
-                imgToDispose.BitmapImg = null;
+                if (imgToDispose.ImageStream != null)
+                {
+                    imgToDispose.ImageStream.Close();
+                    imgToDispose.ImageStream.Dispose();
+                    imgToDispose.ImageStream = null;
+                    GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+                }
+                    imgToDispose.BitmapImg = null;
             }
         }
 

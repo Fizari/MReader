@@ -13,6 +13,7 @@ namespace MReader.Core.Models
 
         public FileInfo File { get; }
         public BitmapImage BitmapImg { get; set; }
+        public Stream ImageStream { get; set; }
 
         public ImageData(string filePath)
         {
