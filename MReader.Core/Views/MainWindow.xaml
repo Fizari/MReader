@@ -11,6 +11,9 @@
         <i:EventTrigger EventName="PreviewKeyDown">
             <prism:InvokeCommandAction Command="{Binding WindowKeyDownCommand}" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <prism:InvokeCommandAction Command="{Binding WindowLoadedCommand}" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <DockPanel>
@@ -22,9 +25,10 @@
         </DockPanel.Background>
         <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
             <ToolBar>
-                <Button  Command="{Binding OpenFileDialog}">OPEN</Button>
-                <Button  Command="{Binding PressMe}">YOLO</Button>
-                <Button  Command="{Binding PressMe}">WOOOH</Button>
+                <Button  Command="{Binding OpenFileDialogCommand}">Open</Button>
+                <Button  Command="{Binding LockSplittersCommand}">Lock</Button>
+                <Button  Command="{Binding PressMe}">Mode</Button>
+                <Button  Command="{Binding PressMe}">Fullscreen</Button>
             </ToolBar>
         </ToolBarTray>
 
@@ -54,8 +58,8 @@
                 <ColumnDefinition Width="{Binding SplittersWidth}"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White"/>
-            <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000"/>
+            <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" IsEnabled="{Binding AreSplittersUnlocked}"/>
+            <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000" IsEnabled="{Binding AreSplittersUnlocked}"/>
             <StackPanel Grid.Column="4" Margin="0">
                 <StackPanel.Background>
                     <RadialGradientBrush>

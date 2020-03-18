@@ -18,6 +18,7 @@ namespace MReader.Core
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<IFileService, FileService>();
+            containerRegistry.Register<ISettingsService, SettingsService>();
         }
     }
 }

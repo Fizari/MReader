@@ -12,17 +12,31 @@ namespace MReader.Core.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private IFileService _fileService;
-        private BitmapImage _imageSource;
+
+#if DEBUG
         private string _title = "MReader - Dev";
+#else
+        private string _title = "MReader";
+#endif
+
+        private IFileService _fileService;
+        private ISettingsService _settingsService;
+        private BitmapImage _imageSource;
         private int _splittersWidth = 10;
         private int _imagePanelMinWidth = 100;
-        private DelegateCommand _openFileDialog;
+        private DelegateCommand _openFileDialogCommand;
+        private DelegateCommand _lockOrUnlockSplittersCommand;
+        private DelegateCommand _windowLoadedCommand;
+        private bool _areSplittersUnlocked;
 
-        #region properties
+#region properties
 
-        public DelegateCommand OpenFileDialog =>
-            _openFileDialog ?? (_openFileDialog = new DelegateCommand(ChooseFile));
+        public DelegateCommand OpenFileDialogCommand =>
+            _openFileDialogCommand ?? (_openFileDialogCommand = new DelegateCommand(ChooseFile));
+        public DelegateCommand LockSplittersCommand =>
+            _lockOrUnlockSplittersCommand ?? (_lockOrUnlockSplittersCommand = new DelegateCommand(LockOrUnlockSplitters));
+        public DelegateCommand WindowLoadedCommand =>
+            _windowLoadedCommand ?? (_windowLoadedCommand = new DelegateCommand(WindowLoaded));
         public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
         public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
 
@@ -50,14 +64,33 @@ namespace MReader.Core.ViewModels
             set { SetProperty(ref _imagePanelMinWidth, value); }
         }
 
-        #endregion
-
-        public MainWindowViewModel(IFileService fileService)
+        public bool AreSplittersUnlocked
         {
+            get { return _areSplittersUnlocked; }
+            set { SetProperty(ref _areSplittersUnlocked, value); }
+        }
+
+#endregion
+
+        public MainWindowViewModel(IFileService fileService, ISettingsService settingsService)
+        {
+            this.PrintDebug();
             _fileService = fileService;
             _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
+
+            //Load the settings
+            _settingsService = settingsService;
+            var settings = _settingsService.LoadSettings();
+            SplittersWidth = settings.SplittersWidth;
+            AreSplittersUnlocked = settings.SplittersUnlocked;
+
             WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
             GridKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnGridInputKeyDown);
+        }
+
+        public void WindowLoaded()
+        {
+            this.PrintDebug();
         }
 
         private void ChooseFile()
@@ -68,6 +101,12 @@ namespace MReader.Core.ViewModels
                 string fileToLoad = openFileDialog.FileName;
                 _fileService.LoadFile(fileToLoad);
             }
+        }
+
+        private void LockOrUnlockSplitters()
+        {
+            AreSplittersUnlocked = !AreSplittersUnlocked;
+            _settingsService.SetSplittersUnlocked(AreSplittersUnlocked);
         }
 
         // Display the Image in the panel when receiving the event 
@@ -83,7 +122,7 @@ namespace MReader.Core.ViewModels
             ImageSource = imageData.BitmapImg;
         }
 
-        #region key bindings
+#region key bindings
         private void OnWindowInputKeyDown(KeyEventArgs e)
         {
             //CTRL + O
@@ -130,6 +169,6 @@ namespace MReader.Core.ViewModels
             }
         }
 
-        #endregion
+#endregion
     }
 }
