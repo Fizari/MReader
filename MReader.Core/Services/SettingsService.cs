@@ -71,7 +71,7 @@ namespace MReader.Core.Services
             return settings;
         }
 
-        public void SetReaderMode(Mode readerMode)
+        public void SetReaderMode(ReaderMode readerMode)
         {
             _settings.ReaderMode = readerMode;
             SaveSettings();

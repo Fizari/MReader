@@ -5,6 +5,7 @@ using MReader.Core.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -21,13 +22,17 @@ namespace MReader.Core.ViewModels
 
         private IFileService _fileService;
         private ISettingsService _settingsService;
+        private ILoggingService _loggingService;
         private BitmapImage _imageSource;
         private int _splittersWidth = 10;
         private int _imagePanelMinWidth = 100;
         private DelegateCommand _openFileDialogCommand;
         private DelegateCommand _lockOrUnlockSplittersCommand;
         private DelegateCommand _windowLoadedCommand;
+        private DelegateCommand _toggleLoggingWindowCommand;
         private bool _areSplittersUnlocked;
+        private bool _isLoggingWindowVisible;
+        private List<LoggingMessage> _logMessageList;
 
 #region properties
 
@@ -37,6 +42,9 @@ namespace MReader.Core.ViewModels
             _lockOrUnlockSplittersCommand ?? (_lockOrUnlockSplittersCommand = new DelegateCommand(LockOrUnlockSplitters));
         public DelegateCommand WindowLoadedCommand =>
             _windowLoadedCommand ?? (_windowLoadedCommand = new DelegateCommand(WindowLoaded));
+        public DelegateCommand ToggleLoggingWindowCommand =>
+            _toggleLoggingWindowCommand ?? (_toggleLoggingWindowCommand = new DelegateCommand(ToggleLoggingWindow));
+        
         public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
         public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
 
@@ -70,11 +78,39 @@ namespace MReader.Core.ViewModels
             set { SetProperty(ref _areSplittersUnlocked, value); }
         }
 
+        public List<LoggingMessage> LogMessageList
+        {
+            get { return _logMessageList; }
+            set {SetProperty(ref _logMessageList, value);}
+        }
+
+        public bool IsLoggingWindowVisible
+        {
+            get { return _isLoggingWindowVisible; }
+            set { SetProperty(ref _isLoggingWindowVisible, value); }
+        }
+
 #endregion
 
-        public MainWindowViewModel(IFileService fileService, ISettingsService settingsService)
+        public MainWindowViewModel(IFileService fileService, ISettingsService settingsService, ILoggingService loggingService)
         {
             this.PrintDebug();
+            _loggingService = loggingService;
+
+            //TEST
+            _loggingService.AddNewMessage("This is a normal message loul");
+            _loggingService.AddNewMessage("This is a normal message loul");
+            _loggingService.AddNewMessage("This is a normal message loul");
+            _loggingService.AddNewMessage("This is a normal message loul");
+            _loggingService.AddNewMessage("This is a Warning message, it's not critical :)", LoggingMessageType.Warning);
+            _loggingService.AddNewMessage("This is a normal dzadazdzadzadzadzaazdzadadzadzadzadazdzadzadddaz loul");
+            _loggingService.AddNewMessage("This is a normal =azdjiuaz loul");
+            _loggingService.AddNewMessage("This is a ERROR message, ITS FLIPPING NOT OK >:(", LoggingMessageType.Error);
+            _loggingService.AddNewMessage("This is a Warning dazdjazhazvgd :)", LoggingMessageType.Warning);
+            _loggingService.AddNewMessage("This is a ERROR message, FLIPPER THE DOLPHIIN", LoggingMessageType.Error);
+            _logMessageList = _loggingService.GetMessages();
+            //ENDTEST
+
             _fileService = fileService;
             _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
 
@@ -109,6 +145,11 @@ namespace MReader.Core.ViewModels
             _settingsService.SetSplittersUnlocked(AreSplittersUnlocked);
         }
 
+        private void ToggleLoggingWindow()
+        {
+            IsLoggingWindowVisible = !IsLoggingWindowVisible;
+        }
+
         // Display the Image in the panel when receiving the event 
         private void OnCurrentImageJustLoaded(object sender, EventArgs e)
         {
@@ -120,6 +161,12 @@ namespace MReader.Core.ViewModels
             ImageData imageData = imageToDisplay;
             this.PrintDebug(imageData.File.FullName);
             ImageSource = imageData.BitmapImg;
+        }
+
+        private void AddLogMessage(string message, LoggingMessageType type = LoggingMessageType.Normal)
+        {
+            _loggingService.AddNewMessage(message, type);
+            _logMessageList = _loggingService.GetMessages();
         }
 
 #region key bindings

@@ -19,6 +19,7 @@ namespace MReader.Core
         {
             containerRegistry.Register<IFileService, FileService>();
             containerRegistry.Register<ISettingsService, SettingsService>();
+            containerRegistry.Register<ILoggingService, LoggingService>();
         }
     }
 }

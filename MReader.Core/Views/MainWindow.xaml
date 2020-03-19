@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:converters="clr-namespace:MReader.Core.Converters"
+        xmlns:views="clr-namespace:MReader.Core.Views"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="350" Width="525">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+    </Window.Resources>
 
     <i:Interaction.Triggers >
         <i:EventTrigger EventName="PreviewKeyDown">
@@ -15,71 +19,101 @@
             <prism:InvokeCommandAction Command="{Binding WindowLoadedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-
-    <DockPanel>
-        <DockPanel.Background>
-            <RadialGradientBrush>
-                <GradientStop Color="White"/>
-                <GradientStop Color="#FF761DA2" Offset="1"/>
-            </RadialGradientBrush>
-        </DockPanel.Background>
-        <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
-            <ToolBar>
-                <Button  Command="{Binding OpenFileDialogCommand}">Open</Button>
-                <Button  Command="{Binding LockSplittersCommand}">Lock</Button>
-                <Button  Command="{Binding PressMe}">Mode</Button>
-                <Button  Command="{Binding PressMe}">Fullscreen</Button>
-            </ToolBar>
-        </ToolBarTray>
-
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
-
-            <i:Interaction.Triggers >
-                <i:EventTrigger EventName="PreviewKeyDown">
-                    <prism:InvokeCommandAction Command="{Binding GridKeyDownCommand}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-
-            <Grid.Resources>
-                <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="{Binding SplittersWidth}"/>
-                <ColumnDefinition MinWidth="{Binding ImagePanelMinWidth}" 
-                                  Width="auto">
-                    <ColumnDefinition.MaxWidth>
-                        <MultiBinding Converter="{StaticResource IPWidthConverter}">
-                            <Binding ElementName="mainGrid" Path="ActualWidth"/>
-                            <Binding ElementName="splitter1" Path="ActualWidth"/>
-                        </MultiBinding>
-                    </ColumnDefinition.MaxWidth>
-                </ColumnDefinition>
-                <ColumnDefinition Width="{Binding SplittersWidth}"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" IsEnabled="{Binding AreSplittersUnlocked}"/>
-            <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000" IsEnabled="{Binding AreSplittersUnlocked}"/>
-            <StackPanel Grid.Column="4" Margin="0">
-                <StackPanel.Background>
-                    <RadialGradientBrush>
-                        <GradientStop Color="#FFFFBE67"/>
-                        <GradientStop Color="#FFF2FFEB" Offset="1"/>
-                    </RadialGradientBrush>
-                </StackPanel.Background>
+    <Canvas x:Name="mainCanvas">
+        <DockPanel Width="{Binding ActualWidth, ElementName=mainCanvas}" Height="{Binding ActualHeight, ElementName=mainCanvas}">
+            <DockPanel.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="White"/>
+                    <GradientStop Color="#FF761DA2" Offset="1"/>
+                </RadialGradientBrush>
+            </DockPanel.Background>
+            <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
+                <ToolBar>
+                    <Button Command="{Binding OpenFileDialogCommand}">Open</Button>
+                    <Button Command="{Binding LockSplittersCommand}">Lock</Button>
+                    <Button Command="{Binding PressMe}">Mode</Button>
+                    <Button Command="{Binding PressMe}">Fullscreen</Button>
+                </ToolBar>
+            </ToolBarTray>
+            <StackPanel x:Name="footerBar" DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#FFFAFAFA">
+                <Button Content="ERRORS" Command="{Binding ToggleLoggingWindowCommand}"/>
             </StackPanel>
-            <StackPanel Grid.Column="0" Margin="0">
-                <StackPanel.Background>
-                    <RadialGradientBrush>
-                        <GradientStop Color="#FFFFBE67"/>
-                        <GradientStop Color="#FFF2FFEB" Offset="1"/>
-                    </RadialGradientBrush>
-                </StackPanel.Background>
-            </StackPanel>
-            <!-- Image Panel -->
-            <ScrollViewer  Grid.Column="2" Margin="0">
-                <Image Source="{Binding ImageSource}" Stretch="Uniform"></Image>
-            </ScrollViewer>
-        </Grid>
-    </DockPanel>
+
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
+
+                <i:Interaction.Triggers >
+                    <i:EventTrigger EventName="PreviewKeyDown">
+                        <prism:InvokeCommandAction Command="{Binding GridKeyDownCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <Grid.Resources>
+                    <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="{Binding SplittersWidth}"/>
+                    <ColumnDefinition MinWidth="{Binding ImagePanelMinWidth}" 
+                                      Width="auto">
+                        <ColumnDefinition.MaxWidth>
+                            <MultiBinding Converter="{StaticResource IPWidthConverter}">
+                                <Binding ElementName="mainGrid" Path="ActualWidth"/>
+                                <Binding ElementName="splitter1" Path="ActualWidth"/>
+                            </MultiBinding>
+                        </ColumnDefinition.MaxWidth>
+                    </ColumnDefinition>
+                    <ColumnDefinition Width="{Binding SplittersWidth}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" IsEnabled="{Binding AreSplittersUnlocked}"/>
+                <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000" IsEnabled="{Binding AreSplittersUnlocked}"/>
+                <StackPanel Grid.Column="4" Margin="0">
+                    <StackPanel.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFFFBE67"/>
+                            <GradientStop Color="#FFF2FFEB" Offset="1"/>
+                        </RadialGradientBrush>
+                    </StackPanel.Background>
+                </StackPanel>
+                <StackPanel Grid.Column="0" Margin="0">
+                    <StackPanel.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFFFBE67"/>
+                            <GradientStop Color="#FFF2FFEB" Offset="1"/>
+                        </RadialGradientBrush>
+                    </StackPanel.Background>
+                </StackPanel>
+                <!-- Image Panel -->
+                <ScrollViewer  Grid.Column="2" Margin="0">
+                    <Image Source="{Binding ImageSource}" Stretch="Uniform"></Image>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+        
+        <!-- Logging Window -->
+        <ListBox 
+            ItemsSource="{Binding LogMessageList}" 
+            Width="500" Height="100" 
+            Canvas.Bottom="{Binding ActualHeight, ElementName=footerBar}" 
+            Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }"
+            views:LoggingWindowBehavior.ScrollOnNewItem="True">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Time, StringFormat=[{0:HH:mm:ss}] }" Foreground="Gray"/>
+                        <TextBlock Text=" " />
+                        <TextBlock x:Name="messageBody" Text="{Binding Message}" />
+                    </StackPanel>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Type}" Value="Warning">
+                            <Setter TargetName="messageBody" Property="Foreground" Value="#FFD7AA00" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Error">
+                            <Setter TargetName="messageBody" Property="Foreground" Value="Red" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Canvas>
 </Window>

@@ -4,16 +4,16 @@
     {
         public int SplittersWidth { get; set; }
         public bool SplittersUnlocked { get; set; }
-        public Mode ReaderMode { get; set; }
+        public ReaderMode ReaderMode { get; set; }
 
         public Settings ()
         {
             SplittersWidth = 10;
             SplittersUnlocked = true;
-            ReaderMode = Mode.Splitters;
+            ReaderMode = ReaderMode.Splitters;
         }
 
-        public Settings (int splittersWidth, bool splittersUnlocked, Mode readerMode)
+        public Settings (int splittersWidth, bool splittersUnlocked, ReaderMode readerMode)
         {
             SplittersWidth = splittersWidth;
             SplittersUnlocked = splittersUnlocked;

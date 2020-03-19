@@ -4,9 +4,10 @@ using System.Text;
 
 namespace MReader.Core.Models
 {
-    public enum Mode
+    public enum LoggingMessageType
     {
-        Splitters,
-        MainPanel
+        Normal,
+        Warning,
+        Error
     }
 }
