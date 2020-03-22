@@ -1,11 +1,14 @@
 ﻿using Microsoft.Win32;
 using MReader.Core.Extensions;
 using MReader.Core.Models;
+using MReader.Core.Exceptions;
 using MReader.Core.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -30,11 +33,12 @@ namespace MReader.Core.ViewModels
         private DelegateCommand _lockOrUnlockSplittersCommand;
         private DelegateCommand _windowLoadedCommand;
         private DelegateCommand _toggleLoggingWindowCommand;
+        private DelegateCommand _pressMe;//TODO REMOVE
         private bool _areSplittersUnlocked;
         private bool _isLoggingWindowVisible;
-        private List<LoggingMessage> _logMessageList;
-
-#region properties
+        private ObservableCollection<LoggingMessage> _logMessageList;
+        
+        #region properties
 
         public DelegateCommand OpenFileDialogCommand =>
             _openFileDialogCommand ?? (_openFileDialogCommand = new DelegateCommand(ChooseFile));
@@ -44,7 +48,9 @@ namespace MReader.Core.ViewModels
             _windowLoadedCommand ?? (_windowLoadedCommand = new DelegateCommand(WindowLoaded));
         public DelegateCommand ToggleLoggingWindowCommand =>
             _toggleLoggingWindowCommand ?? (_toggleLoggingWindowCommand = new DelegateCommand(ToggleLoggingWindow));
-        
+        public DelegateCommand PressMeCommand =>
+            _pressMe ?? (_pressMe = new DelegateCommand(PressMe));
+
         public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
         public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
 
@@ -78,7 +84,7 @@ namespace MReader.Core.ViewModels
             set { SetProperty(ref _areSplittersUnlocked, value); }
         }
 
-        public List<LoggingMessage> LogMessageList
+        public ObservableCollection<LoggingMessage> LogMessageList
         {
             get { return _logMessageList; }
             set {SetProperty(ref _logMessageList, value);}
@@ -96,19 +102,12 @@ namespace MReader.Core.ViewModels
         {
             this.PrintDebug();
             _loggingService = loggingService;
+            LogMessageList = new ObservableCollection<LoggingMessage>();
 
             //TEST
-            _loggingService.AddNewMessage("This is a normal message loul");
-            _loggingService.AddNewMessage("This is a normal message loul");
-            _loggingService.AddNewMessage("This is a normal message loul");
-            _loggingService.AddNewMessage("This is a normal message loul");
-            _loggingService.AddNewMessage("This is a Warning message, it's not critical :)", LoggingMessageType.Warning);
-            _loggingService.AddNewMessage("This is a normal dzadazdzadzadzadzaazdzadadzadzadzadazdzadzadddaz loul");
-            _loggingService.AddNewMessage("This is a normal =azdjiuaz loul");
-            _loggingService.AddNewMessage("This is a ERROR message, ITS FLIPPING NOT OK >:(", LoggingMessageType.Error);
-            _loggingService.AddNewMessage("This is a Warning dazdjazhazvgd :)", LoggingMessageType.Warning);
-            _loggingService.AddNewMessage("This is a ERROR message, FLIPPER THE DOLPHIIN", LoggingMessageType.Error);
-            _logMessageList = _loggingService.GetMessages();
+            DisplayLogMessage(new LoggingMessage("This is a first message for testing"));
+            DisplayLogMessage(new LoggingMessage("This is a warning message for testing",LoggingMessageType.Warning));
+            DisplayLogMessage(new LoggingMessage("This is an error message for testing", LoggingMessageType.Error));
             //ENDTEST
 
             _fileService = fileService;
@@ -116,7 +115,16 @@ namespace MReader.Core.ViewModels
 
             //Load the settings
             _settingsService = settingsService;
-            var settings = _settingsService.LoadSettings();
+
+            var settings = new Settings();
+            try
+            {
+                settings = _settingsService.LoadSettings();
+            }
+            catch (FailedToLoadSettingsException f)
+            {
+                DisplayLogMessage(_loggingService.AddSettingsNotFoundWarningMessage());
+            }
             SplittersWidth = settings.SplittersWidth;
             AreSplittersUnlocked = settings.SplittersUnlocked;
 
@@ -127,6 +135,11 @@ namespace MReader.Core.ViewModels
         public void WindowLoaded()
         {
             this.PrintDebug();
+        }
+
+        private void PressMe()
+        {
+            LogMessageList.Add(new LoggingMessage("This was just added", LoggingMessageType.Error));
         }
 
         private void ChooseFile()
@@ -163,10 +176,10 @@ namespace MReader.Core.ViewModels
             ImageSource = imageData.BitmapImg;
         }
 
-        private void AddLogMessage(string message, LoggingMessageType type = LoggingMessageType.Normal)
+        private void DisplayLogMessage(LoggingMessage logMessage)
         {
-            _loggingService.AddNewMessage(message, type);
-            _logMessageList = _loggingService.GetMessages();
+            //Handles displaying of message
+            LogMessageList.Add(logMessage);
         }
 
 #region key bindings

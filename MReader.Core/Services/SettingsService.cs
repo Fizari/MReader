@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MReader.Core.Models;
+using MReader.Core.Exceptions;
 using MReader.Core.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.RepresentationModel;
@@ -31,8 +32,9 @@ namespace MReader.Core.Services
             string yaml = serializer.Serialize(_settings);
             this.PrintDebug("Saving at "+ _settingsFullPath);
             this.PrintDebug(yaml);
-            //Write to file settings.yaml
-            //todo manage error in case file exist and cannot be written over
+
+            //TODO manage error in case file exist and cannot be written over
+            //by incrementing a counter in the name of the file 
             using (StreamWriter outputFile = new StreamWriter(_settingsFullPath))
             {
                 outputFile.WriteLine(yaml);
@@ -47,8 +49,7 @@ namespace MReader.Core.Services
         {
             if (!File.Exists(_settingsFullPath))
             {
-                //Todo display warning message
-                return new Settings();
+                throw new FailedToLoadSettingsException();
             }
 
             string settingsString = File.ReadAllText(_settingsFullPath);
@@ -61,9 +62,8 @@ namespace MReader.Core.Services
             }
             catch
             {
-                //Todo Display warning 
                 this.PrintDebug("Exception during deserialization of settings file");
-                settings = new Settings();
+                throw new FailedToLoadSettingsException();
             }
             
             _settings = settings;

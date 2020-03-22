@@ -14,13 +14,11 @@ namespace MReader.Core.Exceptions
         public FolderEmptyException(string message)
         : base(message)
         {
-            //TODO
         }
 
         public FolderEmptyException(string message, Exception inner)
         : base(message, inner)
         {
-            //TODO 
         }
     }
 }

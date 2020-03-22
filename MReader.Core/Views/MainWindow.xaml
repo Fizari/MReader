@@ -31,8 +31,9 @@
                 <ToolBar>
                     <Button Command="{Binding OpenFileDialogCommand}">Open</Button>
                     <Button Command="{Binding LockSplittersCommand}">Lock</Button>
-                    <Button Command="{Binding PressMe}">Mode</Button>
-                    <Button Command="{Binding PressMe}">Fullscreen</Button>
+                    <Button Command="{Binding PressMeCommand}">Mode</Button>
+                    <Button Command="{Binding PressMeCommand}">Fullscreen</Button>
+                    <Button Command="{Binding PressMeCommand}">Add message</Button>
                 </ToolBar>
             </ToolBarTray>
             <StackPanel x:Name="footerBar" DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#FFFAFAFA">
@@ -95,8 +96,10 @@
             ItemsSource="{Binding LogMessageList}" 
             Width="500" Height="100" 
             Canvas.Bottom="{Binding ActualHeight, ElementName=footerBar}" 
-            Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }"
-            views:LoggingWindowBehavior.ScrollOnNewItem="True">
+            Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }">
+            <i:Interaction.Behaviors>
+                <views:AutoScroll Mode="Enabled"/>
+            </i:Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
