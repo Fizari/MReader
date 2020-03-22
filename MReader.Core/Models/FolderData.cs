@@ -1,5 +1,4 @@
-﻿using MReader.Core.Exceptions;
-using MReader.Core.Extensions;
+﻿using MReader.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;

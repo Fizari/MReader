@@ -29,15 +29,37 @@ namespace MReader.Core.Services
             return _messages;
         }
 
-        public LoggingMessage AddFileCorruptedErrorMessage(string fileName)
+        //**
+        // Be extra careful : the name fo the fucntion below have to match a certain format "Add + SettingsMessageType + Message"
+        // in order to be called with a reflexive method in MainWindowViewModel
+        //**
+        public LoggingMessage AddLoadingFailedMessage()
         {
-            var msg = new LoggingMessage("The file "+ fileName +" is corrupted and couldn't be loaded.", LoggingMessageType.Error);
+            var msg = new LoggingMessage("The sttings file is corrupted and couldn't be loaded, loading default settings instead.", LoggingMessageType.Error);
             _messages.Add(msg);
             return msg;
         }
-        public LoggingMessage AddSettingsNotFoundWarningMessage()
+        public LoggingMessage AddFileNotFoundMessage()
         {
-            var msg = new LoggingMessage("The settings file wasn't found or was corrupted, a new one has been generated with default values.", LoggingMessageType.Warning);
+            var msg = new LoggingMessage("The settings file wasn't found, a new one has been generated with default values.", LoggingMessageType.Warning);
+            _messages.Add(msg);
+            return msg;
+        }
+        public LoggingMessage AddSavingFailedMessage()
+        {
+            var msg = new LoggingMessage("The settings file couldn't be saved under the usual name.", LoggingMessageType.Warning);
+            _messages.Add(msg);
+            return msg;
+        }
+        public LoggingMessage AddLoadingSuccessfulMessage()
+        {
+            var msg = new LoggingMessage("Settings were loaded succesfully.");
+            _messages.Add(msg);
+            return msg;
+        }
+        public LoggingMessage AddSavingSuccessfulMessage()
+        {
+            var msg = new LoggingMessage("Settings were saved succesfully.");
             _messages.Add(msg);
             return msg;
         }

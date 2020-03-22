@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MReader.Core.Models;
-using MReader.Core.Exceptions;
 using MReader.Core.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.RepresentationModel;
@@ -17,6 +16,8 @@ namespace MReader.Core.Services
         private static string _settingsFullPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, _settingsFileName);
         private Settings _settings;
 
+        public event EventHandler SettingsMessageRaised;
+
         public SettingsService ()
         {
             _settings = new Settings();
@@ -27,6 +28,7 @@ namespace MReader.Core.Services
             if (_settings == null)
             {
                 LoadSettings();
+                return;
             }
             var serializer = new SerializerBuilder().Build();
             string yaml = serializer.Serialize(_settings);
@@ -39,6 +41,7 @@ namespace MReader.Core.Services
             {
                 outputFile.WriteLine(yaml);
             }
+            FireSettingsMessage(SettingsMessageType.SavingSuccessful);
         }
         public Settings GetSettings ()
         {
@@ -49,7 +52,10 @@ namespace MReader.Core.Services
         {
             if (!File.Exists(_settingsFullPath))
             {
-                throw new FailedToLoadSettingsException();
+                FireSettingsMessage(SettingsMessageType.FileNotFound);
+                _settings = new Settings();
+                SaveSettings();
+                return _settings;
             }
 
             string settingsString = File.ReadAllText(_settingsFullPath);
@@ -63,11 +69,14 @@ namespace MReader.Core.Services
             catch
             {
                 this.PrintDebug("Exception during deserialization of settings file");
-                throw new FailedToLoadSettingsException();
+                FireSettingsMessage(SettingsMessageType.LoadingFailed);
+                _settings = new Settings();
+                SaveSettings();
+                return _settings;
             }
             
             _settings = settings;
-
+            FireSettingsMessage(SettingsMessageType.LoadingSuccessful);
             return settings;
         }
 
@@ -87,6 +96,12 @@ namespace MReader.Core.Services
         {
             _settings.SplittersWidth = splittersWidth;
             SaveSettings();
+        }
+
+        public void FireSettingsMessage(SettingsMessageType type)
+        {
+            this.PrintDebug("type : " + type);
+            SettingsMessageRaised?.Invoke(type, new EventArgs());
         }
     }
 }

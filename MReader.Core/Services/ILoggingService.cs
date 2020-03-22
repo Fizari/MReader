@@ -11,7 +11,10 @@ namespace MReader.Core.Services
         public void AddNewMessage(string message, LoggingMessageType type = LoggingMessageType.Normal);
         public void AddNewMessage(LoggingMessage message);
         public ObservableCollection<LoggingMessage> GetMessages();
-        public LoggingMessage AddFileCorruptedErrorMessage(string fileName);
-        public LoggingMessage AddSettingsNotFoundWarningMessage();
+        public LoggingMessage AddLoadingFailedMessage();
+        public LoggingMessage AddFileNotFoundMessage();
+        public LoggingMessage AddSavingFailedMessage();
+        public LoggingMessage AddLoadingSuccessfulMessage();
+        public LoggingMessage AddSavingSuccessfulMessage();
     }
 }

@@ -7,6 +7,7 @@ namespace MReader.Core.Services
 {
     public interface ISettingsService
     {
+        public event EventHandler SettingsMessageRaised;
         public void SetSplittersWidth (int splittersWidth);
         public void SetReaderMode (ReaderMode readerMode);
         public void SetSplittersUnlocked (bool splittersLocked);

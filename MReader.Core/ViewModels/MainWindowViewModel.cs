@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using MReader.Core.Extensions;
 using MReader.Core.Models;
-using MReader.Core.Exceptions;
 using MReader.Core.Services;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -11,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Reflection;
 
 namespace MReader.Core.ViewModels
 {
@@ -101,6 +101,8 @@ namespace MReader.Core.ViewModels
         public MainWindowViewModel(IFileService fileService, ISettingsService settingsService, ILoggingService loggingService)
         {
             this.PrintDebug();
+
+            //Initiate logging service
             _loggingService = loggingService;
             LogMessageList = new ObservableCollection<LoggingMessage>();
 
@@ -110,24 +112,18 @@ namespace MReader.Core.ViewModels
             DisplayLogMessage(new LoggingMessage("This is an error message for testing", LoggingMessageType.Error));
             //ENDTEST
 
+            //Initiate file service
             _fileService = fileService;
             _fileService.CurrentImageLoaded += OnCurrentImageJustLoaded;
 
             //Load the settings
             _settingsService = settingsService;
-
-            var settings = new Settings();
-            try
-            {
-                settings = _settingsService.LoadSettings();
-            }
-            catch (FailedToLoadSettingsException f)
-            {
-                DisplayLogMessage(_loggingService.AddSettingsNotFoundWarningMessage());
-            }
+            _settingsService.SettingsMessageRaised += OnSettingsEvent;
+            var settings = _settingsService.LoadSettings();
             SplittersWidth = settings.SplittersWidth;
             AreSplittersUnlocked = settings.SplittersUnlocked;
 
+            //key binding events
             WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
             GridKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnGridInputKeyDown);
         }
@@ -158,6 +154,7 @@ namespace MReader.Core.ViewModels
             _settingsService.SetSplittersUnlocked(AreSplittersUnlocked);
         }
 
+        //show or hide the log journal
         private void ToggleLoggingWindow()
         {
             IsLoggingWindowVisible = !IsLoggingWindowVisible;
@@ -169,6 +166,15 @@ namespace MReader.Core.ViewModels
             DisplayImage((ImageData)sender);
         }
 
+        //Reflective way to trigger logging function based on event received (see LoggingService class)
+        private void OnSettingsEvent(object type, EventArgs e)
+        {
+            MethodInfo addMethod = _loggingService.GetType().GetMethod("Add"+type.ToString()+"Message");
+            this.PrintDebug("Method to call : "+addMethod.Name);
+            DisplayLogMessage((LoggingMessage)addMethod.Invoke(_loggingService, null));
+        }
+
+        //Handles displaying of image
         private void DisplayImage(ImageData imageToDisplay)
         {
             ImageData imageData = imageToDisplay;
@@ -176,22 +182,22 @@ namespace MReader.Core.ViewModels
             ImageSource = imageData.BitmapImg;
         }
 
+        //Handles displaying of message
         private void DisplayLogMessage(LoggingMessage logMessage)
         {
-            //Handles displaying of message
             LogMessageList.Add(logMessage);
         }
 
 #region key bindings
         private void OnWindowInputKeyDown(KeyEventArgs e)
         {
-            //CTRL + O
+            //CTRL + O (open file)
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O)
             {
                 ChooseFile();
                 e.Handled = true;
             }
-            //CTRL + ENTER
+            //CTRL + ENTER (Fullscreen)
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
             {
                 //LOGIC
@@ -201,27 +207,27 @@ namespace MReader.Core.ViewModels
 
         private void OnGridInputKeyDown(KeyEventArgs e)
         {
-            //LEFT
+            //LEFT (previous image)
             if (e.Key == Key.Left)
             {
                 ImageData newImageToDisplay = _fileService.LoadPreviousImage();
                 DisplayImage(newImageToDisplay);
                 e.Handled = true;
             }
-            //RIGHT
+            //RIGHT  (next image)
             if (e.Key == Key.Right)
             {
                 ImageData newImageToDisplay = _fileService.LoadNextImage();
                 DisplayImage(newImageToDisplay);
                 e.Handled = true;
             }
-            //UP
+            //UP (scroll up)
             if (e.Key == Key.Up)
             {
                 //LOGIC
                 e.Handled = true;
             }
-            //DOWN
+            //DOWN (scroll down)
             if (e.Key == Key.Down)
             {
                 //LOGIC
