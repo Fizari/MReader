@@ -8,6 +8,96 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="350" Width="525">
     <Window.Resources>
+        <!-- BRUSHED -->
+        <SolidColorBrush x:Key="ThumbBrush" Color="#FF64B5DF" />
+        <SolidColorBrush x:Key="ThumbBorderBrush" Color="#FF64B5DF" />
+        <!-- END BRUSHED -->
+
+        <!-- STYLES -->
+        <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border CornerRadius="2" BorderThickness="1" Width="8" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+            <Track Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Background="{StaticResource ThumbBrush}" BorderBrush="{StaticResource ThumbBorderBrush}" />
+                </Track.Thumb>
+            </Track>
+        </ControlTemplate>
+        <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+            <Track Name="PART_Track" IsDirectionReversed="False">
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollBarThumb}" Background="{StaticResource ThumbBrush}" BorderBrush="{StaticResource ThumbBorderBrush}" />
+                </Track.Thumb>
+            </Track>
+        </ControlTemplate>
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+                </Trigger>
+                <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=imageScrollViewer}" Value="True">
+                    <Setter Property="Opacity" Value="0.80"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=imageScrollViewer}" Value="False">
+                    <Setter Property="Opacity" Value="0.25"/>
+                </DataTrigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="imageScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+                            <ScrollBar Name="PART_VerticalScrollBar"  
+                                       Grid.Column="1"
+                                       Grid.Row="0"
+                                       Margin="4,4,4,4"
+                                       Value="{TemplateBinding VerticalOffset}" 
+                                       Maximum="{TemplateBinding ScrollableHeight}" 
+                                       ViewportSize="{TemplateBinding ViewportHeight}" 
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                            <ScrollBar Name="PART_HorizontalScrollBar" 
+                                       Orientation="Horizontal" 
+                                       Grid.Row="1" 
+                                       Grid.Column="0"
+                                       Margin="4,4,4,4"
+                                       Value="{TemplateBinding HorizontalOffset}" 
+                                       Maximum="{TemplateBinding ScrollableWidth}" 
+                                       ViewportSize="{TemplateBinding ViewportWidth}" 
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- END STYLES -->
+
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
     </Window.Resources>
 
@@ -20,13 +110,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Canvas x:Name="mainCanvas">
-        <DockPanel Width="{Binding ActualWidth, ElementName=mainCanvas}" Height="{Binding ActualHeight, ElementName=mainCanvas}">
-            <DockPanel.Background>
-                <RadialGradientBrush>
-                    <GradientStop Color="White"/>
-                    <GradientStop Color="#FF761DA2" Offset="1"/>
-                </RadialGradientBrush>
-            </DockPanel.Background>
+        <DockPanel Width="{Binding ActualWidth, ElementName=mainCanvas}" Height="{Binding ActualHeight, ElementName=mainCanvas}" Background="#FF78E2E8">
             <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
                 <ToolBar>
                     <Button Command="{Binding OpenFileDialogCommand}">Open</Button>
@@ -67,30 +151,16 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <GridSplitter x:Name="splitter1" Grid.Column="1" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" IsEnabled="{Binding AreSplittersUnlocked}"/>
-                <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" OpacityMask="#00000000" IsEnabled="{Binding AreSplittersUnlocked}"/>
-                <StackPanel Grid.Column="4" Margin="0">
-                    <StackPanel.Background>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#FFFFBE67"/>
-                            <GradientStop Color="#FFF2FFEB" Offset="1"/>
-                        </RadialGradientBrush>
-                    </StackPanel.Background>
-                </StackPanel>
-                <StackPanel Grid.Column="0" Margin="0">
-                    <StackPanel.Background>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#FFFFBE67"/>
-                            <GradientStop Color="#FFF2FFEB" Offset="1"/>
-                        </RadialGradientBrush>
-                    </StackPanel.Background>
-                </StackPanel>
+                <GridSplitter x:Name="splitter2" Grid.Column="3" ResizeBehavior="PreviousAndNext" Width="{Binding SplittersWidth}" Margin="0" Background="White" IsEnabled="{Binding AreSplittersUnlocked}"/>
+                <StackPanel Grid.Column="4" Margin="0" Background="#FF484848"/>
+                <StackPanel Grid.Column="0" Margin="0" Background="#FF484848"/>
                 <!-- Image Panel -->
-                <ScrollViewer  Grid.Column="2" Margin="0">
+                <ScrollViewer x:Name="imageScrollViewer" Style="{StaticResource imageScrollViewerStyle}" Grid.Column="2" Margin="0" VerticalScrollBarVisibility="Auto">
                     <Image Source="{Binding ImageSource}" Stretch="Uniform"></Image>
                 </ScrollViewer>
             </Grid>
         </DockPanel>
-        
+
         <!-- Logging Window -->
         <ListBox 
             ItemsSource="{Binding LogMessageList}" 

@@ -10,6 +10,9 @@ using System.Windows.Media;
 
 namespace MReader.Core.Views
 {
+    //***
+    // Modified from https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added/2007072
+    //***
     public class AutoScroll : Behavior<ItemsControl>
     {
         public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(
