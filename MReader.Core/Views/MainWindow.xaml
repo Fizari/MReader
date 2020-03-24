@@ -11,6 +11,8 @@
         <!-- BRUSHED -->
         <SolidColorBrush x:Key="ThumbBrush" Color="#FF64B5DF" />
         <SolidColorBrush x:Key="ThumbBorderBrush" Color="#FF64B5DF" />
+        <SolidColorBrush x:Key="WarningMessageColor" Color="#FFD7AA00" />
+        <SolidColorBrush x:Key="ErrorMessageColor" Color="Red" />
         <!-- END BRUSHED -->
 
         <!-- STYLES -->
@@ -38,9 +40,8 @@
                 </Track.Thumb>
             </Track>
         </ControlTemplate>
+
         <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Style.Triggers>
                 <Trigger Property="Orientation" Value="Horizontal">
                     <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
@@ -48,10 +49,10 @@
                 <Trigger Property="Orientation" Value="Vertical">
                     <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
                 </Trigger>
-                <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=imageScrollViewer}" Value="True">
+                <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
                     <Setter Property="Opacity" Value="0.80"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=imageScrollViewer}" Value="False">
+                <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
                     <Setter Property="Opacity" Value="0.25"/>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -96,8 +97,25 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="logMessageCurrentTextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </Trigger>
+                <DataTrigger Binding="{Binding Type}" Value="Warning">
+                    <Setter Property="Foreground" Value="{StaticResource WarningMessageColor}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type}" Value="Error">
+                    <Setter Property="Foreground" Value="{StaticResource ErrorMessageColor}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- END STYLES -->
 
+        <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
+        <converters:MessageListBoxWidthConverter x:Key="MLWidthConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
     </Window.Resources>
 
@@ -121,7 +139,20 @@
                 </ToolBar>
             </ToolBarTray>
             <StackPanel x:Name="footerBar" DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#FFFAFAFA">
-                <Button Content="ERRORS" Command="{Binding ToggleLoggingWindowCommand}"/>
+                <StackPanel Orientation="Horizontal">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding ToggleLoggingWindowCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <StackPanel Orientation="Horizontal" DataContext="{Binding LogMessageCurrent}" >
+                        <TextBlock 
+                            Text="{Binding Message}" 
+                            Style="{StaticResource logMessageCurrentTextBlockStyle}"
+                            Cursor="Hand">
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
 
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Panel.ZIndex="-1" x:Name="mainGrid">
@@ -132,9 +163,6 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
-                <Grid.Resources>
-                    <converters:ImagePanelWidthConverter x:Key="IPWidthConverter" />
-                </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="{Binding SplittersWidth}"/>
@@ -163,10 +191,11 @@
 
         <!-- Logging Window -->
         <ListBox 
-            ItemsSource="{Binding LogMessageList}" 
-            Width="500" Height="100" 
+            ItemsSource="{Binding LogMessageList}"  Height="100" Canvas.Left="10"
+            Width="{Binding Path=ActualWidth, ElementName=mainCanvas, Converter={StaticResource MLWidthConverter}}"
             Canvas.Bottom="{Binding ActualHeight, ElementName=footerBar}" 
-            Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }">
+            Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }"
+            Margin="0,0,0,5">
             <i:Interaction.Behaviors>
                 <views:AutoScroll Mode="Enabled"/>
             </i:Interaction.Behaviors>
@@ -179,10 +208,10 @@
                     </StackPanel>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding Type}" Value="Warning">
-                            <Setter TargetName="messageBody" Property="Foreground" Value="#FFD7AA00" />
+                            <Setter TargetName="messageBody" Property="Foreground" Value="{StaticResource WarningMessageColor}" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Type}" Value="Error">
-                            <Setter TargetName="messageBody" Property="Foreground" Value="Red" />
+                            <Setter TargetName="messageBody" Property="Foreground" Value="{StaticResource ErrorMessageColor}" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>

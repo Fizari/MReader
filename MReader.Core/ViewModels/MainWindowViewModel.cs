@@ -37,7 +37,8 @@ namespace MReader.Core.ViewModels
         private bool _areSplittersUnlocked;
         private bool _isLoggingWindowVisible;
         private ObservableCollection<LoggingMessage> _logMessageList;
-        
+        private LoggingMessage _logMessageCurrent;
+
         #region properties
 
         public DelegateCommand OpenFileDialogCommand =>
@@ -90,6 +91,12 @@ namespace MReader.Core.ViewModels
             set {SetProperty(ref _logMessageList, value);}
         }
 
+        public LoggingMessage LogMessageCurrent
+        {
+            get { return _logMessageCurrent ?? new LoggingMessage(""); }
+            set { SetProperty(ref _logMessageCurrent, value); }
+        }
+
         public bool IsLoggingWindowVisible
         {
             get { return _isLoggingWindowVisible; }
@@ -135,7 +142,7 @@ namespace MReader.Core.ViewModels
 
         private void PressMe()
         {
-            LogMessageList.Add(new LoggingMessage("This was just added", LoggingMessageType.Error));
+            DisplayLogMessage(new LoggingMessage("This was just added", LoggingMessageType.Error));
         }
 
         private void ChooseFile()
@@ -186,6 +193,7 @@ namespace MReader.Core.ViewModels
         private void DisplayLogMessage(LoggingMessage logMessage)
         {
             LogMessageList.Add(logMessage);
+            LogMessageCurrent = logMessage;
         }
 
 #region key bindings
@@ -201,6 +209,12 @@ namespace MReader.Core.ViewModels
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
             {
                 //LOGIC
+                e.Handled = true;
+            }
+            //CTRL + L (Display log window)
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.L)
+            {
+                ToggleLoggingWindow();
                 e.Handled = true;
             }
         }

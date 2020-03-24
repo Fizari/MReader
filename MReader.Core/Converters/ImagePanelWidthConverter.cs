@@ -13,7 +13,7 @@ namespace MReader.Core.Converters
         //value[1] should be splitter width in DOUBLE
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values[0] == DependencyProperty.UnsetValue)
+            if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue)
             {
                 return 100000;
             }
