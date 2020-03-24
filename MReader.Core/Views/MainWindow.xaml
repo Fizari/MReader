@@ -108,6 +108,16 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Type}" Value="Error">
                     <Setter Property="Foreground" Value="{StaticResource ErrorMessageColor}"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation From="Red" To="Transparent" 
+                                    Storyboard.TargetProperty="(Background).(Color)" 
+                                    FillBehavior="Stop" 
+                                    Duration="0:0:2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -149,7 +159,9 @@
                         <TextBlock 
                             Text="{Binding Message}" 
                             Style="{StaticResource logMessageCurrentTextBlockStyle}"
-                            Cursor="Hand">
+                            Cursor="Hand"
+                            Padding="10,0,10,0"
+                            Background="Transparent">
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
