@@ -184,9 +184,8 @@ namespace MReader.Core.ViewModels
         //Handles displaying of image
         private void DisplayImage(ImageData imageToDisplay)
         {
-            ImageData imageData = imageToDisplay;
-            this.PrintDebug(imageData.File.FullName);
-            ImageSource = imageData.BitmapImg;
+            this.PrintDebug(imageToDisplay.File.FullName);
+            ImageSource = imageToDisplay.BitmapImg;
         }
 
         //Handles displaying of message

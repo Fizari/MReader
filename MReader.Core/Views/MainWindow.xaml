@@ -195,8 +195,16 @@
                 <StackPanel Grid.Column="4" Margin="0" Background="#FF484848"/>
                 <StackPanel Grid.Column="0" Margin="0" Background="#FF484848"/>
                 <!-- Image Panel -->
-                <ScrollViewer x:Name="imageScrollViewer" Style="{StaticResource imageScrollViewerStyle}" Grid.Column="2" Margin="0" VerticalScrollBarVisibility="Auto">
-                    <Image Source="{Binding ImageSource}" Stretch="Uniform"></Image>
+                <ScrollViewer 
+                    x:Name="imageScrollViewer" 
+                    Style="{StaticResource imageScrollViewerStyle}" 
+                    Grid.Column="2" 
+                    Margin="0" 
+                    VerticalScrollBarVisibility="Auto">
+                    <i:Interaction.Behaviors>
+                        <views:ResetScrollPositionBehavior Enabled="True"/>
+                    </i:Interaction.Behaviors>
+                    <Image x:Name="mainImageControl" Source="{Binding ImageSource, Mode = OneWay, NotifyOnTargetUpdated=True}" Stretch="Uniform"></Image>
                 </ScrollViewer>
             </Grid>
         </DockPanel>
@@ -209,7 +217,7 @@
             Visibility="{Binding Path=IsLoggingWindowVisible, Converter={StaticResource BoolToVisConverter} }"
             Margin="0,0,0,5">
             <i:Interaction.Behaviors>
-                <views:AutoScroll Mode="Enabled"/>
+                <views:AutoScrollDownBehavior Mode="Enabled"/>
             </i:Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>

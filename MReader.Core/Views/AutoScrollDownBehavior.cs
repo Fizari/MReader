@@ -13,10 +13,10 @@ namespace MReader.Core.Views
     //***
     // Modified from https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added/2007072
     //***
-    public class AutoScroll : Behavior<ItemsControl>
+    public class AutoScrollDownBehavior : Behavior<ItemsControl>
     {
         public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(
-            "Mode", typeof(AutoScrollMode), typeof(AutoScroll), new PropertyMetadata(AutoScrollMode.Enabled));
+            "Mode", typeof(AutoScrollMode), typeof(AutoScrollDownBehavior), new PropertyMetadata(AutoScrollMode.Enabled));
         public AutoScrollMode Mode
         {
             get => (AutoScrollMode)GetValue(ModeProperty);
@@ -39,7 +39,7 @@ namespace MReader.Core.Views
         }
 
         private static readonly DependencyProperty ItemsCountProperty = DependencyProperty.Register(
-            "ItemsCount", typeof(int), typeof(AutoScroll), new PropertyMetadata(0, (s, e) => ((AutoScroll)s).OnCountChanged()));
+            "ItemsCount", typeof(int), typeof(AutoScrollDownBehavior), new PropertyMetadata(0, (s, e) => ((AutoScrollDownBehavior)s).OnCountChanged()));
         private ScrollViewer _scroll;
 
         private void OnLoaded(object sender, RoutedEventArgs e)
