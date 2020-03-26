@@ -98,6 +98,29 @@ namespace MReader.Core.Services
             SaveSettings();
         }
 
+        public void SetApplicationWindowSize(double width, double height)
+        {
+            _settings.AppWindowSize.Width = width;
+            _settings.AppWindowSize.Height = height;
+            SaveSettings();
+        }
+
+        public void SetReaderPanelWidth(double width)
+        {
+            _settings.ReaderPanelWidth = width;
+            SaveSettings();
+        }
+
+        public ReaderMode SwitchMode()
+        {
+            if (_settings.ReaderMode == ReaderMode.MainPanel)
+                _settings.ReaderMode = ReaderMode.Splitters;
+            else
+                _settings.ReaderMode = ReaderMode.MainPanel;
+            SaveSettings();
+            return _settings.ReaderMode;
+        }
+
         public void FireSettingsMessage(SettingsMessageType type)
         {
             this.PrintDebug("type : " + type);

@@ -11,7 +11,10 @@ namespace MReader.Core.Services
         public void SetSplittersWidth (int splittersWidth);
         public void SetReaderMode (ReaderMode readerMode);
         public void SetSplittersUnlocked (bool splittersLocked);
+        public void SetApplicationWindowSize(double width, double height);
+        public void SetReaderPanelWidth(double width);
         public Settings GetSettings();
         public Settings LoadSettings();
+        public ReaderMode SwitchMode();
     }
 }

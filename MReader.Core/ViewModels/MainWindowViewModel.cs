@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Reflection;
+using System.Windows;
 
 namespace MReader.Core.ViewModels
 {
@@ -27,20 +28,28 @@ namespace MReader.Core.ViewModels
         private ISettingsService _settingsService;
         private ILoggingService _loggingService;
         private BitmapImage _imageSource;
-        private int _splittersWidth = 10;
-        private int _imagePanelMinWidth = 100;
+        private int _splittersWidth;
+        private double _mainScrollViewerWidth;
+        private int _imagePanelMinWidth;
+        private double _appWindowWidth;
+        private double _appWindowHeight;
         private DelegateCommand _openFileDialogCommand;
         private DelegateCommand _lockOrUnlockSplittersCommand;
         private DelegateCommand _windowLoadedCommand;
         private DelegateCommand _toggleLoggingWindowCommand;
         private DelegateCommand _pressMe;//TODO REMOVE
+        private DelegateCommand _switchModeCommand;
+        private DelegateCommand _windowClosingCommand;
         private bool _areSplittersUnlocked;
         private bool _isLoggingWindowVisible;
         private ObservableCollection<LoggingMessage> _logMessageList;
         private LoggingMessage _logMessageCurrent;
 
         #region properties
-
+        public DelegateCommand WindowClosingCommand =>
+            _windowClosingCommand ?? (_windowClosingCommand = new DelegateCommand(ApplicationClosing));
+        public DelegateCommand SwitchModeCommand =>
+            _switchModeCommand ?? (_switchModeCommand = new DelegateCommand(SwitchMode));
         public DelegateCommand OpenFileDialogCommand =>
             _openFileDialogCommand ?? (_openFileDialogCommand = new DelegateCommand(ChooseFile));
         public DelegateCommand LockSplittersCommand =>
@@ -71,6 +80,24 @@ namespace MReader.Core.ViewModels
         {
             get { return _splittersWidth; }
             set { SetProperty(ref _splittersWidth, value); }
+        }
+
+        public double MainScrollViewerWidth
+        {
+            get => _mainScrollViewerWidth;
+            set => SetProperty(ref _mainScrollViewerWidth, value);
+        }
+
+        public double AppWindowWidth
+        {
+            get => _appWindowWidth;
+            set => SetProperty(ref _appWindowWidth, value);
+        }
+
+        public double AppWindowHeight
+        {
+            get => _appWindowHeight;
+            set => SetProperty(ref _appWindowHeight, value);
         }
 
         public int ImagePanelMinWidth
@@ -129,6 +156,9 @@ namespace MReader.Core.ViewModels
             var settings = _settingsService.LoadSettings();
             SplittersWidth = settings.SplittersWidth;
             AreSplittersUnlocked = settings.SplittersUnlocked;
+            MainScrollViewerWidth = settings.ReaderPanelWidth;
+            AppWindowWidth = settings.AppWindowSize.Width;
+            AppWindowHeight = settings.AppWindowSize.Height;
 
             //key binding events
             WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
@@ -143,6 +173,25 @@ namespace MReader.Core.ViewModels
         private void PressMe()
         {
             DisplayLogMessage(new LoggingMessage("This was just added", LoggingMessageType.Error));
+        }
+
+        private void SwitchMode()
+        {
+            ReaderMode mode = _settingsService.SwitchMode();
+            if (mode == ReaderMode.MainPanel)
+            {
+                //set splitters width to 0
+                SplittersWidth = 0;
+                AreSplittersUnlocked = false;
+                //bind main panel width to window width
+                MainScrollViewerWidth = AppWindowWidth;
+            }
+            if (mode == ReaderMode.Splitters)
+            {
+                SplittersWidth = _settingsService.GetSettings().SplittersWidth;
+                AreSplittersUnlocked = true;
+                MainScrollViewerWidth = double.NaN;
+            }
         }
 
         private void ChooseFile()
@@ -195,7 +244,12 @@ namespace MReader.Core.ViewModels
             LogMessageCurrent = logMessage;
         }
 
-#region key bindings
+        private void ApplicationClosing()
+        {
+            _settingsService.SetApplicationWindowSize(AppWindowWidth, AppWindowHeight);
+        }
+
+        #region key bindings
         private void OnWindowInputKeyDown(KeyEventArgs e)
         {
             //CTRL + O (open file)

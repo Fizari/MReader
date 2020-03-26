@@ -6,7 +6,9 @@
         xmlns:views="clr-namespace:MReader.Core.Views"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525">
+        Title="{Binding Title}" 
+        Height="{Binding AppWindowHeight, Mode=TwoWay}" 
+        Width="{Binding AppWindowWidth, Mode=TwoWay}">
     <Window.Resources>
         <!-- BRUSHED -->
         <SolidColorBrush x:Key="ThumbBrush" Color="#FF64B5DF" />
@@ -136,6 +138,9 @@
         <i:EventTrigger EventName="Loaded">
             <prism:InvokeCommandAction Command="{Binding WindowLoadedCommand}" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closing">
+            <prism:InvokeCommandAction Command="{Binding WindowClosingCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
     <Canvas x:Name="mainCanvas">
         <DockPanel Width="{Binding ActualWidth, ElementName=mainCanvas}" Height="{Binding ActualHeight, ElementName=mainCanvas}" Background="#FF78E2E8">
@@ -143,7 +148,7 @@
                 <ToolBar>
                     <Button Command="{Binding OpenFileDialogCommand}">Open</Button>
                     <Button Command="{Binding LockSplittersCommand}">Lock</Button>
-                    <Button Command="{Binding PressMeCommand}">Mode</Button>
+                    <Button Command="{Binding SwitchModeCommand}">Mode</Button>
                     <Button Command="{Binding PressMeCommand}">Fullscreen</Button>
                     <Button Command="{Binding PressMeCommand}">Add message</Button>
                 </ToolBar>
@@ -200,6 +205,7 @@
                     Style="{StaticResource imageScrollViewerStyle}" 
                     Grid.Column="2" 
                     Margin="0" 
+                    Width="{Binding MainScrollViewerWidth}"
                     VerticalScrollBarVisibility="Auto">
                     <i:Interaction.Behaviors>
                         <views:ResetScrollPositionBehavior Enabled="True"/>
