@@ -7,6 +7,6 @@ namespace MReader.Core.Models
     public enum ReaderMode
     {
         Splitters,
-        MainPanel
+        SinglePanel
     }
 }

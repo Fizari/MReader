@@ -13,7 +13,7 @@ namespace MReader.Core.Models
         public ReaderState()
         {
             AppWindowSize = new ControlSize(525.0, 350.0);
-            ReaderPanelWidth = double.NaN;
+            ReaderPanelWidth = 100;
         }
 
         public ReaderState(double readerPlanelWidth, ControlSize appWindowSize)

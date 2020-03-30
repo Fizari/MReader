@@ -180,14 +180,17 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
+                <i:Interaction.Behaviors>
+                    <views:MainGridModeBehavior Mode="{Binding ReaderMode}"/>
+                </i:Interaction.Behaviors>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="{Binding SplittersWidth}"/>
-                    <ColumnDefinition MinWidth="{Binding ImagePanelMinWidth}" 
-                                      Width="{Binding MainScrollViewerWidth}">
+                    <ColumnDefinition Width="{Binding MainScrollViewerWidth}">
                         <ColumnDefinition.MaxWidth>
                             <MultiBinding Converter="{StaticResource IPWidthConverter}">
-                                <Binding ElementName="mainGrid" Path="ActualWidth"/>
+                                <Binding ElementName="mainCanvas" Path="ActualWidth"/>
                                 <Binding ElementName="splitter1" Path="ActualWidth"/>
                             </MultiBinding>
                         </ColumnDefinition.MaxWidth>
@@ -209,6 +212,11 @@
                     <i:Interaction.Behaviors>
                         <views:ResetScrollPositionBehavior Enabled="True"/>
                     </i:Interaction.Behaviors>
+                    <i:Interaction.Triggers >
+                        <i:EventTrigger EventName="SizeChanged">
+                            <prism:InvokeCommandAction Command="{Binding ScrollViewerSizeChangedCommand}" TriggerParameterPath="NewSize"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Image x:Name="mainImageControl" Source="{Binding ImageSource, Mode = OneWay, NotifyOnTargetUpdated=True}" Stretch="Uniform"></Image>
                 </ScrollViewer>
             </Grid>

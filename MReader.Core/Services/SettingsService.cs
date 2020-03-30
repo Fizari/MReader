@@ -62,11 +62,12 @@ namespace MReader.Core.Services
             string textString = File.ReadAllText(filePath);
             var input = new StringReader(textString);
             var deserializer = new DeserializerBuilder().Build();
-            T resultObject;
             
             try
             {
-                resultObject = deserializer.Deserialize<T>(input);
+                T resultObject = deserializer.Deserialize<T>(input);
+                FireSettingsMessage(SettingsMessageType.LoadingSuccessful, typeof(T));
+                return resultObject;
             }
             catch
             {
@@ -74,10 +75,7 @@ namespace MReader.Core.Services
                 FireSettingsMessage(SettingsMessageType.LoadingFailed, typeof(T));
                 SaveYamlFile(defaultObject, filePath);
                 return defaultObject;
-            }
-
-            FireSettingsMessage(SettingsMessageType.LoadingSuccessful, typeof(T));
-            return resultObject;
+            }            
         }
 
         private void SaveSettingsToFile ()
@@ -92,7 +90,8 @@ namespace MReader.Core.Services
 
         public Settings LoadSettingsFromFile()
         {
-            return (Settings)LoadYamlFile(_settingsFullPath, new Settings());
+            _settings = (Settings)LoadYamlFile(_settingsFullPath, new Settings());
+            return _settings;
         }
 
         private void SaveReaderStateToFile()
@@ -107,7 +106,8 @@ namespace MReader.Core.Services
 
         public ReaderState LoadReaderStateFromFile()
         {
-            return (ReaderState)LoadYamlFile(_readerStateFullPath, new ReaderState());
+            _readerState = (ReaderState)LoadYamlFile(_readerStateFullPath, new ReaderState());
+            return _readerState;
         }
 
         public void SaveReaderState(ControlSize windowSize, double readerPanelWidth)
@@ -138,10 +138,10 @@ namespace MReader.Core.Services
 
         public ReaderMode SwitchMode()
         {
-            if (_settings.ReaderMode == ReaderMode.MainPanel)
+            if (_settings.ReaderMode == ReaderMode.SinglePanel)
                 _settings.ReaderMode = ReaderMode.Splitters;
             else
-                _settings.ReaderMode = ReaderMode.MainPanel;
+                _settings.ReaderMode = ReaderMode.SinglePanel;
             SaveSettingsToFile();
             return _settings.ReaderMode;
         }

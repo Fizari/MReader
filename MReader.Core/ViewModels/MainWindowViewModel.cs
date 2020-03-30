@@ -30,9 +30,10 @@ namespace MReader.Core.ViewModels
         private BitmapImage _imageSource;
         private int _splittersWidth;
         private double _mainScrollViewerWidth;
-        private int _imagePanelMinWidth;
+        private double _mainScrollViewerWidthChanged;
         private double _appWindowWidth;
         private double _appWindowHeight;
+        private ReaderMode _readerMode;
         private DelegateCommand _openFileDialogCommand;
         private DelegateCommand _lockOrUnlockSplittersCommand;
         private DelegateCommand _windowLoadedCommand;
@@ -63,6 +64,7 @@ namespace MReader.Core.ViewModels
 
         public DelegateCommand<KeyEventArgs> WindowKeyDownCommand { get; private set; }
         public DelegateCommand<KeyEventArgs> GridKeyDownCommand { get; private set; }
+        public DelegateCommand<object> ScrollViewerSizeChangedCommand { get; private set; }
 
         public string Title
         {
@@ -74,6 +76,12 @@ namespace MReader.Core.ViewModels
         {
             get { return _imageSource; }
             set { SetProperty(ref _imageSource, value); }
+        }
+
+        public ReaderMode ReaderMode
+        {
+            get { return _readerMode; }
+            set { SetProperty(ref _readerMode, value); }
         }
 
         public int SplittersWidth 
@@ -98,12 +106,6 @@ namespace MReader.Core.ViewModels
         {
             get => _appWindowHeight;
             set => SetProperty(ref _appWindowHeight, value);
-        }
-
-        public int ImagePanelMinWidth
-        {
-            get { return _imagePanelMinWidth; }
-            set { SetProperty(ref _imagePanelMinWidth, value); }
         }
 
         public bool AreSplittersUnlocked
@@ -164,11 +166,13 @@ namespace MReader.Core.ViewModels
             //key binding events
             WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
             GridKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnGridInputKeyDown);
+            ScrollViewerSizeChangedCommand = new DelegateCommand<object>(ScrollViewerSizeChanged);
         }
 
         public void WindowLoaded()
         {
             this.PrintDebug();
+            ReaderMode = _settingsService.Settings.ReaderMode; //should be set after MainScrollViewerWidth has been set 
         }
 
         private void PressMe()
@@ -178,7 +182,7 @@ namespace MReader.Core.ViewModels
 
         private void SwitchMode()
         {
-            //TODO
+            ReaderMode = _settingsService.SwitchMode();
         }
 
         private void ChooseFile()
@@ -201,6 +205,13 @@ namespace MReader.Core.ViewModels
         private void ToggleLoggingWindow()
         {
             IsLoggingWindowVisible = !IsLoggingWindowVisible;
+        }
+
+        //Triggered everytime the size of the scrollviewer is changed
+        private void ScrollViewerSizeChanged(object e)
+        {
+            Size s = (Size)e;
+            _mainScrollViewerWidthChanged = s.Width;
         }
 
         // Display the Image in the panel when receiving the event 
@@ -234,7 +245,7 @@ namespace MReader.Core.ViewModels
 
         private void ApplicationClosing()
         {
-            _settingsService.SaveReaderState(new ControlSize(AppWindowWidth, AppWindowHeight), MainScrollViewerWidth);
+            _settingsService.SaveReaderState(new ControlSize(AppWindowWidth, AppWindowHeight), _mainScrollViewerWidthChanged);
         }
 
         #region key bindings
