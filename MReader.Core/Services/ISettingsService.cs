@@ -2,19 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace MReader.Core.Services
 {
     public interface ISettingsService
     {
-        public event EventHandler SettingsMessageRaised;
+        public event EventHandler SettingsMessageRaised; 
+        public Settings Settings { get; }
+        public ReaderState ReaderState { get; }
         public void SetSplittersWidth (int splittersWidth);
         public void SetReaderMode (ReaderMode readerMode);
         public void SetSplittersUnlocked (bool splittersLocked);
-        public void SetApplicationWindowSize(double width, double height);
-        public void SetReaderPanelWidth(double width);
-        public Settings GetSettings();
-        public Settings LoadSettings();
+        public void SaveReaderState(ControlSize windowSize, double readerPanelWidth);
+        public Settings LoadSettingsFromFile();
+        public ReaderState LoadReaderStateFromFile();
         public ReaderMode SwitchMode();
     }
 }

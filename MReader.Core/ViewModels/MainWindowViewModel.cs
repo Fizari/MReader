@@ -153,12 +153,13 @@ namespace MReader.Core.ViewModels
             //Load the settings
             _settingsService = settingsService;
             _settingsService.SettingsMessageRaised += OnSettingsEvent;
-            var settings = _settingsService.LoadSettings();
+            var settings = _settingsService.LoadSettingsFromFile();
+            var state = _settingsService.LoadReaderStateFromFile();
             SplittersWidth = settings.SplittersWidth;
             AreSplittersUnlocked = settings.SplittersUnlocked;
-            MainScrollViewerWidth = settings.ReaderPanelWidth;
-            AppWindowWidth = settings.AppWindowSize.Width;
-            AppWindowHeight = settings.AppWindowSize.Height;
+            MainScrollViewerWidth = state.ReaderPanelWidth;
+            AppWindowWidth = state.AppWindowSize.Width;
+            AppWindowHeight = state.AppWindowSize.Height;
 
             //key binding events
             WindowKeyDownCommand = new DelegateCommand<KeyEventArgs>(OnWindowInputKeyDown);
@@ -177,21 +178,7 @@ namespace MReader.Core.ViewModels
 
         private void SwitchMode()
         {
-            ReaderMode mode = _settingsService.SwitchMode();
-            if (mode == ReaderMode.MainPanel)
-            {
-                //set splitters width to 0
-                SplittersWidth = 0;
-                AreSplittersUnlocked = false;
-                //bind main panel width to window width
-                MainScrollViewerWidth = AppWindowWidth;
-            }
-            if (mode == ReaderMode.Splitters)
-            {
-                SplittersWidth = _settingsService.GetSettings().SplittersWidth;
-                AreSplittersUnlocked = true;
-                MainScrollViewerWidth = double.NaN;
-            }
+            //TODO
         }
 
         private void ChooseFile()
@@ -225,9 +212,10 @@ namespace MReader.Core.ViewModels
         //Reflective way to trigger logging function based on event received (see LoggingService class)
         private void OnSettingsEvent(object type, EventArgs e)
         {
-            MethodInfo addMethod = _loggingService.GetType().GetMethod("Add"+type.ToString()+"Message");
+            SettingsEventArgs args = (SettingsEventArgs)e;
+            MethodInfo addMethod = _loggingService.GetType().GetMethod("AddSettings"+type.ToString()+"Message");
             this.PrintDebug("Method to call : "+addMethod.Name);
-            DisplayLogMessage((LoggingMessage)addMethod.Invoke(_loggingService, null));
+            DisplayLogMessage((LoggingMessage)addMethod.Invoke(_loggingService, new object[] { args.Target }));
         }
 
         //Handles displaying of image
@@ -246,7 +234,7 @@ namespace MReader.Core.ViewModels
 
         private void ApplicationClosing()
         {
-            _settingsService.SetApplicationWindowSize(AppWindowWidth, AppWindowHeight);
+            _settingsService.SaveReaderState(new ControlSize(AppWindowWidth, AppWindowHeight), MainScrollViewerWidth);
         }
 
         #region key bindings

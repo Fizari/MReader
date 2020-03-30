@@ -30,36 +30,61 @@ namespace MReader.Core.Services
         }
 
         //**
-        // Be extra careful : the name fo the fucntion below have to match a certain format "Add + SettingsMessageType + Message"
+        // Be extra careful : the name fo the fucntion below have to match a certain format "AddSettings" + SettingsMessageType + "Message"
         // in order to be called with a reflexive method in MainWindowViewModel
         //**
-        public LoggingMessage AddLoadingFailedMessage()
+        public LoggingMessage AddSettingsLoadingFailedMessage(Type target)
         {
-            var msg = new LoggingMessage("The sttings file is corrupted and couldn't be loaded, loading default settings instead.", LoggingMessageType.Error);
+            string msgString = "";
+            if (target == typeof(ReaderState))
+                msgString = "The state file is corrupted and couldn't be loaded, loading default state instead.";
+            if (target == typeof(Settings))
+                msgString = "The settings file is corrupted and couldn't be loaded, loading default settings instead.";
+            var msg = new LoggingMessage(msgString, LoggingMessageType.Error);
             _messages.Add(msg);
             return msg;
         }
-        public LoggingMessage AddFileNotFoundMessage()
+        public LoggingMessage AddSettingsFileNotFoundMessage(Type target)
         {
-            var msg = new LoggingMessage("The settings file wasn't found, a new one has been generated with default values.", LoggingMessageType.Warning);
+            string msgString = "";
+            if (target == typeof(ReaderState))
+                msgString = "The state file wasn't found, a new one has been generated with default values.";
+            if (target == typeof(Settings))
+                msgString = "The settings file wasn't found, a new one has been generated with default values.";
+            var msg = new LoggingMessage(msgString, LoggingMessageType.Warning);
             _messages.Add(msg);
             return msg;
         }
-        public LoggingMessage AddSavingFailedMessage()
+        public LoggingMessage AddSettingsSavingFailedMessage(Type target)
         {
-            var msg = new LoggingMessage("The settings file couldn't be saved under the usual name.", LoggingMessageType.Warning);
+            string msgString = "";
+            if (target == typeof(ReaderState))
+                msgString = "The state file couldn't be saved under the usual name.";
+            if (target == typeof(Settings))
+                msgString = "The settings file couldn't be saved under the usual name.";
+            var msg = new LoggingMessage(msgString, LoggingMessageType.Warning);
             _messages.Add(msg);
             return msg;
         }
-        public LoggingMessage AddLoadingSuccessfulMessage()
+        public LoggingMessage AddSettingsLoadingSuccessfulMessage(Type target)
         {
-            var msg = new LoggingMessage("Settings were loaded succesfully.");
+            string msgString = "";
+            if (target == typeof(ReaderState))
+                msgString = "Saved state was loaded succesfully.";
+            if (target == typeof(Settings))
+                msgString = "Saved settings were loaded succesfully.";
+            var msg = new LoggingMessage(msgString);
             _messages.Add(msg);
             return msg;
         }
-        public LoggingMessage AddSavingSuccessfulMessage()
+        public LoggingMessage AddSettingsSavingSuccessfulMessage(Type target)
         {
-            var msg = new LoggingMessage("Settings were saved succesfully.");
+            string msgString = "";
+            if (target == typeof(ReaderState))
+                msgString = "The reader state was saved succesfully.";
+            if (target == typeof(Settings))
+                msgString = "Settings were saved succesfully.";
+            var msg = new LoggingMessage(msgString);
             _messages.Add(msg);
             return msg;
         }

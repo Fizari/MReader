@@ -184,7 +184,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="{Binding SplittersWidth}"/>
                     <ColumnDefinition MinWidth="{Binding ImagePanelMinWidth}" 
-                                      Width="auto">
+                                      Width="{Binding MainScrollViewerWidth}">
                         <ColumnDefinition.MaxWidth>
                             <MultiBinding Converter="{StaticResource IPWidthConverter}">
                                 <Binding ElementName="mainGrid" Path="ActualWidth"/>
@@ -205,7 +205,6 @@
                     Style="{StaticResource imageScrollViewerStyle}" 
                     Grid.Column="2" 
                     Margin="0" 
-                    Width="{Binding MainScrollViewerWidth}"
                     VerticalScrollBarVisibility="Auto">
                     <i:Interaction.Behaviors>
                         <views:ResetScrollPositionBehavior Enabled="True"/>

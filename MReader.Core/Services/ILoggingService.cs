@@ -11,10 +11,10 @@ namespace MReader.Core.Services
         public void AddNewMessage(string message, LoggingMessageType type = LoggingMessageType.Normal);
         public void AddNewMessage(LoggingMessage message);
         public ObservableCollection<LoggingMessage> GetMessages();
-        public LoggingMessage AddLoadingFailedMessage();
-        public LoggingMessage AddFileNotFoundMessage();
-        public LoggingMessage AddSavingFailedMessage();
-        public LoggingMessage AddLoadingSuccessfulMessage();
-        public LoggingMessage AddSavingSuccessfulMessage();
+        public LoggingMessage AddSettingsLoadingFailedMessage(Type target);
+        public LoggingMessage AddSettingsFileNotFoundMessage(Type target);
+        public LoggingMessage AddSettingsSavingFailedMessage(Type target);
+        public LoggingMessage AddSettingsLoadingSuccessfulMessage(Type target);
+        public LoggingMessage AddSettingsSavingSuccessfulMessage(Type target);
     }
 }

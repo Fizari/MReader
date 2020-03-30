@@ -7,6 +7,7 @@ using MReader.Core.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization.NamingConventions;
+using System.Windows;
 
 namespace MReader.Core.Services
 {
@@ -14,101 +15,125 @@ namespace MReader.Core.Services
     {
         private static string _settingsFileName = "settings.yaml";
         private static string _settingsFullPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, _settingsFileName);
+        private static string _readerStateFileName = "state.yaml";
+        private static string _readerStateFullPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, _readerStateFileName);
         private Settings _settings;
+        private ReaderState _readerState;
 
         public event EventHandler SettingsMessageRaised;
+
+        public Settings Settings { get => _settings; }
+        public ReaderState ReaderState { get => _readerState; }
 
         public SettingsService ()
         {
             _settings = new Settings();
+            _readerState = new ReaderState();
         }
 
-        private void SaveSettings ()
+        //Save the object objectToBeSaved to a Yaml file with path filePath
+        private void SaveYamlFile(object objectToBeSaved, string filePath)
         {
-            if (_settings == null)
-            {
-                LoadSettings();
-                return;
-            }
             var serializer = new SerializerBuilder().Build();
-            string yaml = serializer.Serialize(_settings);
-            this.PrintDebug("Saving at "+ _settingsFullPath);
+            string yaml = serializer.Serialize(objectToBeSaved);
+            this.PrintDebug("Saving at " + _settingsFullPath);
             this.PrintDebug(yaml);
 
             //TODO manage error in case file exist and cannot be written over
-            //by incrementing a counter in the name of the file 
-            using (StreamWriter outputFile = new StreamWriter(_settingsFullPath))
+            //by incrementing a counter in the name of the file
+            using (StreamWriter outputFile = new StreamWriter(filePath))
             {
                 outputFile.WriteLine(yaml);
             }
-            FireSettingsMessage(SettingsMessageType.SavingSuccessful);
-        }
-        public Settings GetSettings ()
-        {
-            return _settings;
+            FireSettingsMessage(SettingsMessageType.SavingSuccessful, objectToBeSaved.GetType());
         }
 
-        public Settings LoadSettings()
+        //Load the object of type T from a Yaml file with path filePath. 
+        //Returns defaultObject if the file couldn't be deserialized (corrupted or doesn't exist)
+        private object LoadYamlFile<T>(string filePath, T defaultObject)
         {
-            if (!File.Exists(_settingsFullPath))
+            if (!File.Exists(filePath))
             {
-                FireSettingsMessage(SettingsMessageType.FileNotFound);
-                _settings = new Settings();
-                SaveSettings();
-                return _settings;
+                FireSettingsMessage(SettingsMessageType.FileNotFound, typeof(T));
+                SaveYamlFile(defaultObject, filePath);
+                return defaultObject;
             }
 
-            string settingsString = File.ReadAllText(_settingsFullPath);
-            var input = new StringReader(settingsString);
+            string textString = File.ReadAllText(filePath);
+            var input = new StringReader(textString);
             var deserializer = new DeserializerBuilder().Build();
-            Settings settings;
+            T resultObject;
+            
             try
             {
-                settings = deserializer.Deserialize<Settings>(input);
+                resultObject = deserializer.Deserialize<T>(input);
             }
             catch
             {
-                this.PrintDebug("Exception during deserialization of settings file");
-                FireSettingsMessage(SettingsMessageType.LoadingFailed);
-                _settings = new Settings();
-                SaveSettings();
-                return _settings;
+                this.PrintDebug("Exception during deserialization of "+typeof(T).ToString()+" file");
+                FireSettingsMessage(SettingsMessageType.LoadingFailed, typeof(T));
+                SaveYamlFile(defaultObject, filePath);
+                return defaultObject;
             }
-            
-            _settings = settings;
-            FireSettingsMessage(SettingsMessageType.LoadingSuccessful);
-            return settings;
+
+            FireSettingsMessage(SettingsMessageType.LoadingSuccessful, typeof(T));
+            return resultObject;
+        }
+
+        private void SaveSettingsToFile ()
+        {
+            if (_settings == null)
+            {
+                LoadYamlFile(_settingsFullPath, new Settings());
+                return;
+            }
+            SaveYamlFile(_settings, _settingsFullPath);
+        }
+
+        public Settings LoadSettingsFromFile()
+        {
+            return (Settings)LoadYamlFile(_settingsFullPath, new Settings());
+        }
+
+        private void SaveReaderStateToFile()
+        {
+            if (_readerState == null)
+            {
+                LoadYamlFile(_readerStateFullPath, new ReaderState());
+                return;
+            }
+            SaveYamlFile(_readerState, _readerStateFullPath);
+        }
+
+        public ReaderState LoadReaderStateFromFile()
+        {
+            return (ReaderState)LoadYamlFile(_readerStateFullPath, new ReaderState());
+        }
+
+        public void SaveReaderState(ControlSize windowSize, double readerPanelWidth)
+        {
+            _readerState.AppWindowSize = windowSize;
+            _readerState.ReaderPanelWidth = readerPanelWidth;
+
+            SaveReaderStateToFile();
         }
 
         public void SetReaderMode(ReaderMode readerMode)
         {
             _settings.ReaderMode = readerMode;
-            SaveSettings();
+            SaveSettingsToFile();
         }
 
         public void SetSplittersUnlocked(bool splittersUnlocked)
         {
             _settings.SplittersUnlocked = splittersUnlocked;
-            SaveSettings();
+            SaveSettingsToFile();
         }
 
         public void SetSplittersWidth(int splittersWidth)
         {
             _settings.SplittersWidth = splittersWidth;
-            SaveSettings();
-        }
-
-        public void SetApplicationWindowSize(double width, double height)
-        {
-            _settings.AppWindowSize.Width = width;
-            _settings.AppWindowSize.Height = height;
-            SaveSettings();
-        }
-
-        public void SetReaderPanelWidth(double width)
-        {
-            _settings.ReaderPanelWidth = width;
-            SaveSettings();
+            SaveSettingsToFile();
         }
 
         public ReaderMode SwitchMode()
@@ -117,14 +142,23 @@ namespace MReader.Core.Services
                 _settings.ReaderMode = ReaderMode.Splitters;
             else
                 _settings.ReaderMode = ReaderMode.MainPanel;
-            SaveSettings();
+            SaveSettingsToFile();
             return _settings.ReaderMode;
         }
 
-        public void FireSettingsMessage(SettingsMessageType type)
+        public void FireSettingsMessage(SettingsMessageType type, Type target)
         {
-            this.PrintDebug("type : " + type);
-            SettingsMessageRaised?.Invoke(type, new EventArgs());
+            this.PrintDebug("type : " + type + ", target : "+target.ToString());
+            var args = new SettingsEventArgs()
+            {
+                Target = target
+            };
+            SettingsMessageRaised?.Invoke(type, args);
         }
+    }
+
+    public class SettingsEventArgs : EventArgs
+    {
+        public Type Target { get; set; }
     }
 }
