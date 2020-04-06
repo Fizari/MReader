@@ -11,4 +11,9 @@
     <PackageReference Include="Prism.Unity" Version="7.2.0.1422" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

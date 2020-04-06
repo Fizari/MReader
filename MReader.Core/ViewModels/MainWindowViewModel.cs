@@ -31,8 +31,15 @@ namespace MReader.Core.ViewModels
         private int _splittersWidth;
         private double _mainScrollViewerWidth;
         private double _mainScrollViewerWidthChanged;
+        private double _topToolbarHeight = 23;
+        private double _footerBarHeight = 20;
+        private double _savedTopToolbarHeight;
+        private double _savedFooterBarHeight;
         private double _appWindowWidth;
         private double _appWindowHeight;
+        private string _fullScreenButtonText = "FullScreen";
+        private WindowState _appWindowState = WindowState.Normal;
+        private WindowStyle _appWindowStyle = WindowStyle.SingleBorderWindow;
         private ReaderMode _readerMode;
         private DelegateCommand _openFileDialogCommand;
         private DelegateCommand _lockOrUnlockSplittersCommand;
@@ -40,8 +47,11 @@ namespace MReader.Core.ViewModels
         private DelegateCommand _toggleLoggingWindowCommand;
         private DelegateCommand _pressMe;//TODO REMOVE
         private DelegateCommand _switchModeCommand;
+        private DelegateCommand _enableFullScreenCommand;
         private DelegateCommand _windowClosingCommand;
         private bool _areSplittersUnlocked;
+        private bool _isAppFullScreen = false;
+        private bool _areToolbarsVisible = true;
         private bool _isLoggingWindowVisible;
         private ObservableCollection<LoggingMessage> _logMessageList;
         private LoggingMessage _logMessageCurrent;
@@ -59,6 +69,8 @@ namespace MReader.Core.ViewModels
             _windowLoadedCommand ?? (_windowLoadedCommand = new DelegateCommand(WindowLoaded));
         public DelegateCommand ToggleLoggingWindowCommand =>
             _toggleLoggingWindowCommand ?? (_toggleLoggingWindowCommand = new DelegateCommand(ToggleLoggingWindow));
+        public DelegateCommand EnableFullScreenCommand =>
+            _enableFullScreenCommand ?? (_enableFullScreenCommand = new DelegateCommand(EnableFullScreen));
         public DelegateCommand PressMeCommand =>
             _pressMe ?? (_pressMe = new DelegateCommand(PressMe));
 
@@ -68,32 +80,44 @@ namespace MReader.Core.ViewModels
 
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            get => _title; 
+            set => SetProperty(ref _title, value); 
         }
 
         public BitmapImage ImageSource
         {
-            get { return _imageSource; }
-            set { SetProperty(ref _imageSource, value); }
+            get =>  _imageSource; 
+            set => SetProperty(ref _imageSource, value); 
         }
 
         public ReaderMode ReaderMode
         {
-            get { return _readerMode; }
-            set { SetProperty(ref _readerMode, value); }
+            get => _readerMode; 
+            set => SetProperty(ref _readerMode, value); 
         }
 
         public int SplittersWidth 
         {
-            get { return _splittersWidth; }
-            set { SetProperty(ref _splittersWidth, value); }
+            get => _splittersWidth;
+            set => SetProperty(ref _splittersWidth, value);
         }
 
         public double MainScrollViewerWidth
         {
             get => _mainScrollViewerWidth;
             set => SetProperty(ref _mainScrollViewerWidth, value);
+        }
+
+        public double TopToolBarHeight
+        {
+            get => _topToolbarHeight;
+            set => SetProperty(ref _topToolbarHeight, value);
+        }
+
+        public double FooterBarHeight
+        {
+            get => _footerBarHeight;
+            set => SetProperty(ref _footerBarHeight, value);
         }
 
         public double AppWindowWidth
@@ -108,28 +132,46 @@ namespace MReader.Core.ViewModels
             set => SetProperty(ref _appWindowHeight, value);
         }
 
+        public WindowStyle AppWindowStyle
+        {
+            get => _appWindowStyle;
+            set => SetProperty(ref _appWindowStyle, value);
+        }
+
+        public WindowState AppWindowState
+        {
+            get => _appWindowState;
+            set => SetProperty(ref _appWindowState, value);
+        }
+
+        public string FullScreenButtonText
+        {
+            get => _fullScreenButtonText;
+            set => SetProperty(ref _fullScreenButtonText, value);
+        }
+
         public bool AreSplittersUnlocked
         {
-            get { return _areSplittersUnlocked; }
-            set { SetProperty(ref _areSplittersUnlocked, value); }
+            get => _areSplittersUnlocked;
+            set => SetProperty(ref _areSplittersUnlocked, value);
         }
 
         public ObservableCollection<LoggingMessage> LogMessageList
         {
-            get { return _logMessageList; }
-            set {SetProperty(ref _logMessageList, value);}
+            get => _logMessageList; 
+            set => SetProperty(ref _logMessageList, value);
         }
 
         public LoggingMessage LogMessageCurrent
         {
-            get { return _logMessageCurrent ?? new LoggingMessage(""); }
-            set { SetProperty(ref _logMessageCurrent, value); }
+            get => _logMessageCurrent ?? new LoggingMessage(""); 
+            set => SetProperty(ref _logMessageCurrent, value);
         }
 
         public bool IsLoggingWindowVisible
         {
-            get { return _isLoggingWindowVisible; }
-            set { SetProperty(ref _isLoggingWindowVisible, value); }
+            get =>  _isLoggingWindowVisible;
+            set => SetProperty(ref _isLoggingWindowVisible, value); 
         }
 
 #endregion
@@ -157,6 +199,7 @@ namespace MReader.Core.ViewModels
             _settingsService.SettingsMessageRaised += OnSettingsEvent;
             var settings = _settingsService.LoadSettingsFromFile();
             var state = _settingsService.LoadReaderStateFromFile();
+            _mainScrollViewerWidthChanged = state.ReaderPanelWidth;
             SplittersWidth = settings.SplittersWidth;
             AreSplittersUnlocked = settings.SplittersUnlocked;
             MainScrollViewerWidth = state.ReaderPanelWidth;
@@ -185,6 +228,23 @@ namespace MReader.Core.ViewModels
             ReaderMode = _settingsService.SwitchMode();
         }
 
+        private void EnableFullScreen()
+        {
+            if (_isAppFullScreen)
+            {
+                FullScreenButtonText = "FullScreen";
+                AppWindowStyle = WindowStyle.SingleBorderWindow;
+                AppWindowState = WindowState.Normal;
+            } 
+            else
+            {
+                FullScreenButtonText = "[Exit FullScreen]";
+                AppWindowStyle = WindowStyle.None;
+                AppWindowState = WindowState.Maximized;
+            }
+            _isAppFullScreen = !_isAppFullScreen;
+        }
+
         private void ChooseFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -205,6 +265,24 @@ namespace MReader.Core.ViewModels
         private void ToggleLoggingWindow()
         {
             IsLoggingWindowVisible = !IsLoggingWindowVisible;
+        }
+
+        //show or hide all the toolbars
+        private void ToggleToolBars()
+        {
+            if (_areToolbarsVisible)
+            {
+                _savedFooterBarHeight = FooterBarHeight;
+                _savedTopToolbarHeight = TopToolBarHeight;
+                FooterBarHeight = 0;
+                TopToolBarHeight = 0;
+            }
+            else
+            {
+                TopToolBarHeight = _savedTopToolbarHeight;
+                FooterBarHeight = _savedFooterBarHeight;
+            }
+            _areToolbarsVisible = !_areToolbarsVisible;
         }
 
         //Triggered everytime the size of the scrollviewer is changed
@@ -260,13 +338,19 @@ namespace MReader.Core.ViewModels
             //CTRL + ENTER (Fullscreen)
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
             {
-                //LOGIC
+                EnableFullScreen();
                 e.Handled = true;
             }
             //CTRL + L (Display log window)
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.L)
             {
                 ToggleLoggingWindow();
+                e.Handled = true;
+            }
+            //CTRL + B (Display/Hide toolbars)
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.B)
+            {
+                ToggleToolBars();
                 e.Handled = true;
             }
         }

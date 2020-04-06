@@ -8,7 +8,9 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" 
         Height="{Binding AppWindowHeight, Mode=TwoWay}" 
-        Width="{Binding AppWindowWidth, Mode=TwoWay}">
+        Width="{Binding AppWindowWidth, Mode=TwoWay}"
+        WindowState="{Binding AppWindowState}"
+        WindowStyle="{Binding AppWindowStyle}">
     <Window.Resources>
         <!-- BRUSHED -->
         <SolidColorBrush x:Key="ThumbBrush" Color="#FF64B5DF" />
@@ -144,16 +146,16 @@
     </i:Interaction.Triggers>
     <Canvas x:Name="mainCanvas">
         <DockPanel Width="{Binding ActualWidth, ElementName=mainCanvas}" Height="{Binding ActualHeight, ElementName=mainCanvas}" Background="#FF78E2E8">
-            <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
+            <ToolBarTray DockPanel.Dock="Top" IsLocked="True" Height="{Binding TopToolBarHeight}">
                 <ToolBar>
                     <Button Command="{Binding OpenFileDialogCommand}">Open</Button>
                     <Button Command="{Binding LockSplittersCommand}">Lock</Button>
                     <Button Command="{Binding SwitchModeCommand}">Mode</Button>
-                    <Button Command="{Binding PressMeCommand}">Fullscreen</Button>
+                    <Button Command="{Binding EnableFullScreenCommand}" Content="{Binding FullScreenButtonText}"/>
                     <Button Command="{Binding PressMeCommand}">Add message</Button>
                 </ToolBar>
             </ToolBarTray>
-            <StackPanel x:Name="footerBar" DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#FFFAFAFA">
+            <StackPanel x:Name="footerBar" DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#FFFAFAFA" Height="{Binding FooterBarHeight}">
                 <StackPanel Orientation="Horizontal">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonDown">
@@ -164,6 +166,7 @@
                         <TextBlock 
                             Text="{Binding Message}" 
                             Style="{StaticResource logMessageCurrentTextBlockStyle}"
+                            VerticalAlignment="Center"
                             Cursor="Hand"
                             Padding="10,0,10,0"
                             Background="Transparent">
