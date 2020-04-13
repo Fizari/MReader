@@ -2,7 +2,7 @@
 
 This reader is to be used mainly to display pictures (*e.g.* .png, .jpeg, .bmp) that are higher than wide. Its purpose is to ease the reading of book pages, manga pages or any pages that are meant to be read in a common way. 
 
-This is a project to help me learn .NET core and practice C# desktop application development. 
+This is a WPF (Windows Presentation Foundation) project to help me learn .NET Core and practice C# desktop application development. 
 
 ## It implements
 
