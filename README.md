@@ -1,6 +1,6 @@
 # MReader
 
-This reader is to be used mainly to display pictures (*e.g.* .png, .jpeg, .bmp) that are higher than wide. Its purpose is to ease the reading of book pages, manga pages or any pages that are meant to be read in a common way. 
+This reader is to be used mainly to display pictures (*e.g.* .png, .jpeg, .bmp) that are higher than wide. Its purpose is to ease the reading of book pages, manga pages or any pages that are meant to be read like a book. 
 
 This is a WPF (Windows Presentation Foundation) project to help me learn .NET Core and practice C# desktop application development. 
 
