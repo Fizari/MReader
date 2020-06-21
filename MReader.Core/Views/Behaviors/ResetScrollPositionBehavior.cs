@@ -7,7 +7,7 @@ using System.Windows.Interactivity;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MReader.Core.Views
+namespace MReader.Core.Views.Behaviors
 {
     public class ResetScrollPositionBehavior : Behavior<ScrollViewer>
     {

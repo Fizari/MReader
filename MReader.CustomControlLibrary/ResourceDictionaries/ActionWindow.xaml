@@ -1,0 +1,294 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MReader.CustomControlLibrary">
+
+    <SolidColorBrush x:Key="titleBarColor" Color="#242d40"/>
+    <SolidColorBrush x:Key="windowButtonColor" Color="#96989e"/>
+    <SolidColorBrush x:Key="controlsColor" Color="#404654"/>
+    <SolidColorBrush x:Key="overButtonForegroundColor" Color="white"/>
+    <SolidColorBrush x:Key="overButtonBackgroundColor" Color="#555966"/>
+
+    <DrawingBrush x:Key="WindowCloseIconBrush">
+        <DrawingBrush.Drawing >
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FF212121" Geometry="F1M8.583,8L13,12.424 12.424,13 8,8.583 3.576,13 3,12.424 7.417,8 3,3.576 3.576,3 8,7.417 12.424,3 13,3.576z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="WindowMaximizeIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FF212121" Geometry="F1M12,12L4,12 4,4 12,4z M3,13L13,13 13,3 3,3z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="WindowMinimizeIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FF212121" Geometry="F1M3,8L13,8 13,7 3,7z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="WindowRestoreIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FF212121" Geometry="F1M11.999,10.002L10.998,10.002 10.998,5.002 5.998,5.002 5.998,4.001 11.999,4.001z M10.002,11.999L4.001,11.999 4.001,5.998 10.002,5.998z M5.002,3L5.002,5.002 3,5.002 3,13 10.998,13 10.998,10.998 13,10.998 13,3z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="ExpandIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M3.3057,3.0301L8.2757,8.0001 3.3057,12.9701 5.7807,15.4451 13.2247,8.0001 5.7807,0.556099999999999z" />
+                    <GeometryDrawing Brush="#FF424242" Geometry="F1M11.8105,8L5.7805,14.03 4.7195,12.97 9.6895,8 4.7195,3.03 5.7805,1.97z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="ExpandIconBrush2">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FF000000" Geometry="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="CollapseIconBrush2">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FF000000" Geometry="M 12,16C 13.1046,16 14,16.8954 14,18C 14,19.1046 13.1046,20 12,20C 10.8954,20 10,19.1046 10,18C 10,16.8954 10.8954,16 12,16 Z M 12,10C 13.1046,10 14,10.8954 14,12C 14,13.1046 13.1046,14 12,14C 10.8954,14 10,13.1046 10,12C 10,10.8954 10.8954,10 12,10 Z M 12,4.00001C 13.1046,4.00001 14,4.89544 14,6.00001C 14,7.10458 13.1046,8.00001 12,8.00001C 10.8954,8.00001 10,7.10458 10,6.00001C 10,4.89544 10.8954,4.00001 12,4.00001 Z M 12,5.00001C 11.4477,5.00001 11,5.44772 11,6.00001C 11,6.55229 11.4477,7.00001 12,7.00001C 12.5523,7.00001 13,6.55229 13,6.00001C 13,5.44772 12.5523,5.00001 12,5.00001 Z M 12,11C 11.4477,11 11,11.4477 11,12C 11,12.5523 11.4477,13 12,13C 12.5523,13 13,12.5523 13,12C 13,11.4477 12.5523,11 12,11 Z M 12,17C 11.4477,17 11,17.4477 11,18C 11,18.5523 11.4477,19 12,19C 12.5523,19 13,18.5523 13,18C 13,17.4477 12.5523,17 12,17 Z " />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="CollapseIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M2.7756,7.9999L10.2196,15.4449 12.6946,12.9699 7.7246,7.9999 12.6946,3.0299 10.2196,0.5559z" />
+                    <GeometryDrawing Brush="#FF424242" Geometry="F1M6.3105,8L11.2805,12.97 10.2195,14.03 4.1895,8 10.2195,1.97 11.2805,3.03z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="EyeOnIconBrush">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FF000000" Geometry="m 15,12 a 3,3 0 0 1 -3,3 3,3 0 0 1 -3,-3 3,3 0 0 1 3,-3 3,3 0 0 1 3,3 z M 1,12 c 0,0 4,-8 11,-8 7,0 11,8 11,8 0,0 -4,8 -11,8 C 5,20 1,12 1,12 Z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <Style x:Key="ActionButtonStyle" TargetType="{ x:Type Button}">
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+        <Setter Property="Width" Value="25"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource windowButtonColor}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource overButtonForegroundColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ExpandAndCollapseButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource windowButtonColor}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource overButtonForegroundColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="WindowButtonsStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource windowButtonColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource overButtonBackgroundColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource WindowButtonsStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Red"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="local:ActionWindow" x:Key="SimpleWindowStyle">
+
+        <Setter Property="WindowStyle" Value="None"/>
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome
+                    CaptionHeight="35"
+                    ResizeBorderThickness="5"/>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:ActionWindow">
+                    <Grid x:Name="windowGrid" Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid x:Name="titleBar" Grid.Row="0" Background="{StaticResource titleBarColor}">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Top">
+
+                                <Image Source="{TemplateBinding Icon}" Height="35" Width="26" Margin="2,2,5,2"/>
+                                <TextBlock x:Name="titleTextBlock" Text="{TemplateBinding Title}" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14" FontFamily="Open Sans Regular"/>
+
+                                <StackPanel Width="10" Height="30" VerticalAlignment="Center" >
+                                    <Button x:Name="collapseControlsButton" 
+                                                Style="{StaticResource ExpandAndCollapseButtonStyle}" 
+                                                Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}" 
+                                                Height="{Binding Path=Height, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                                                VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" OpacityMask="{StaticResource CollapseIconBrush2}" 
+                                                        Width="5" Height="17"  />
+                                    </Button>
+                                    <Button x:Name="expendControlsButton" 
+                                                Style="{StaticResource ExpandAndCollapseButtonStyle}" 
+                                                Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}" 
+                                                Height="{Binding Path=Height, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                                                VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
+                                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" OpacityMask="{StaticResource ExpandIconBrush2}" 
+                                                        Width="5" Height="17"/>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Margin="5,5,0,0" VerticalAlignment="Top" Height="25" Orientation="Horizontal">
+                                    <Border BorderBrush="Transparent"  BorderThickness="0"  x:Name="controlsButtonsBorder" Background="{StaticResource controlsColor}" CornerRadius="2">
+
+                                        <Border.Style>
+                                            <Style TargetType="{x:Type Border}">
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsMouseOver, ElementName=controlsButtonsBorder}" Value="False"/>
+                                                            <Condition Binding="{Binding Visibility, ElementName=collapseControlsButton}" Value="Collapsed"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Opacity" Value="0.4"/>
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                        <StackPanel Orientation="Horizontal">
+
+                                            <StackPanel x:Name="controlsButtonsPanel" Orientation="Horizontal"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                            <Grid Grid.Column="2" WindowChrome.IsHitTestVisibleInChrome="True" Height="30" VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="windowCloseButton" Grid.Column="2" Style="{StaticResource WindowCloseButtonStyle}" Width="47" Height="{TemplateBinding Height}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="17" Height="17" OpacityMask="{StaticResource WindowCloseIconBrush}"/>
+                                </Button>
+                                <Button x:Name="windowMaximizeButton" Grid.Column="1" Style="{StaticResource WindowButtonsStyle}" Width="47" Height="{TemplateBinding Height}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" OpacityMask="{StaticResource WindowMaximizeIconBrush}" 
+                                               Width="16" Height="16"/>
+                                </Button>
+                                <Button x:Name="windowRestoreButton" Grid.Column="1" Visibility="Collapsed" Style="{StaticResource WindowButtonsStyle}" Width="47" Height="{TemplateBinding Height}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" OpacityMask="{StaticResource WindowRestoreIconBrush}" 
+                                               Width="16" Height="16"/>
+                                </Button>
+                                <Button x:Name="windowMinimizeButton" Grid.Column="0" Style="{StaticResource WindowButtonsStyle}" Width="47" Height="{TemplateBinding Height}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" OpacityMask="{StaticResource WindowMinimizeIconBrush}" 
+                                               Width="16" Height="16"/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <ContentPresenter Grid.Row="1"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

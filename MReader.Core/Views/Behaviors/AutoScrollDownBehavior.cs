@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows.Interactivity;
 using System.Windows.Media;
 
-namespace MReader.Core.Views
+namespace MReader.Core.Views.Behaviors
 {
     //***
     // Modified from https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added/2007072

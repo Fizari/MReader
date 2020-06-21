@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interactivity;
 
-namespace MReader.Core.Views
+namespace MReader.Core.Views.Behaviors
 {
     //This class is hard coded to fit a grid with 5 columns containing 2 splitters arranged in a certain way. 
     //It is in no case a generic behavior that can be applied to any grid.
